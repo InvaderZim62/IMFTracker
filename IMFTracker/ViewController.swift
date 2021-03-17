@@ -9,7 +9,7 @@ import UIKit
 
 struct Constants {
     static let frameTime = 0.02
-    static let pulseFrequency = 0.8  // pulses per second
+    static let pulseFrequency = 0.7  // pulses per second
 }
 
 class ViewController: UIViewController {
