@@ -7,12 +7,23 @@
 
 import UIKit
 
-struct DialConst {
+struct General {
     static let D2R = CGFloat.pi / 180
-    static let topDistanceFactor: CGFloat = 0.7  // percent bounds height from top
+    static let lighterBackgroundColor = #colorLiteral(red: 0.08, green: 0.08, blue: 0.08, alpha: 1)
+}
+
+struct Dots {
+    static let numberOfRadials = 9
+    static let numberOfRows = 11
+    static let originFromTopFactor: CGFloat = 1.1  // percent bounds height (origin of dot lines is below the screen)
+    static let startRowFromTopFactor: CGFloat = 0.53  // percent bounds height
+    static let color = #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
+}
+
+struct Dial {
+    static let centerFromTopFactor: CGFloat = 0.7  // percent bounds height
     static let outerRadiusFactor: CGFloat = 0.21  // percent bounds width
     static let innerCircleFactor: CGFloat = 0.3  // percent outer radius
-    static let lighterBackgroundColor = #colorLiteral(red: 0.1298420429, green: 0.1298461258, blue: 0.1298439503, alpha: 1)
     static let outerRingColor = #colorLiteral(red: 0.007069805637, green: 0.3669355512, blue: 0.9889140725, alpha: 1)
     static let clockBeadColor = #colorLiteral(red: 0.01647673175, green: 0.9682727456, blue: 0.4770763516, alpha: 1)
     static let upperBrightWedgeColor = #colorLiteral(red: 0.9179044366, green: 0.9080289602, blue: 0.5714150071, alpha: 1)
@@ -25,22 +36,50 @@ struct DialConst {
 class IMFTrackerView: UIView {
 
     override func draw(_ rect: CGRect) {
+        drawField()
         drawDial()
     }
     
+    private func drawField() {
+        // about 14 rows of dots would fit between center of dial and top of screen (11 rows drawn)
+        let rowSpacing = bounds.height * Dial.centerFromTopFactor / CGFloat(Dots.numberOfRows + 3)
+        let startRowFromTop = bounds.height * Dots.startRowFromTopFactor
+        let centerFromTop = bounds.height * Dots.originFromTopFactor
+        let deltaAngle = asin(bounds.width / centerFromTop) / 5.9  // radians (~6 dots across top of screen)
+        let startAngle = 270.0 * General.D2R - (CGFloat(Dots.numberOfRadials - 1) / 2.0) * deltaAngle
+        let dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same as dial bead radius, below
+        for col in 0..<Dots.numberOfRadials {
+            for row in 0..<Dots.numberOfRows {
+                let dotDistance = (centerFromTop - startRowFromTop) + CGFloat(row) * rowSpacing
+                let dotAngle = startAngle + CGFloat(col) * deltaAngle
+                let dotCenter = CGPoint(x: bounds.midX + dotDistance * cos(dotAngle) , y: centerFromTop + dotDistance * sin(dotAngle))
+                let dot = UIBezierPath(arcCenter: dotCenter, radius: dotRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
+                Dots.color.setFill()
+                dot.fill()
+            }
+        }
+        // lighter gray backgound
+        let dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)
+        let wedge = UIBezierPath()
+        wedge.move(to: dialCenter)
+        wedge.addArc(withCenter: dialCenter, radius: bounds.width, startAngle: -45 * General.D2R, endAngle: -135 * General.D2R, clockwise: true)
+        General.lighterBackgroundColor.setFill()
+        wedge.fill()
+    }
+    
     private func drawDial() {
-        let center = CGPoint(x: bounds.midX, y: bounds.height * DialConst.topDistanceFactor)
-        let outerRadius = bounds.width * DialConst.outerRadiusFactor
-        let innerRadius = outerRadius * DialConst.innerCircleFactor
+        let center = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)
+        let outerRadius = bounds.width * Dial.outerRadiusFactor
+        let innerRadius = outerRadius * Dial.innerCircleFactor
         let innerRingWidth = innerRadius / 6
         let innerXWidth = innerRadius / 8
         let outerRingWidth = outerRadius / 8
         let outerWedgeWidth = outerRadius / 5
         
         let outerRing = UIBezierPath(arcCenter: center, radius: outerRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
-        DialConst.lighterBackgroundColor.setFill()
+        General.lighterBackgroundColor.setFill()
         outerRing.fill()
-        DialConst.outerRingColor.setStroke()
+        Dial.outerRingColor.setStroke()
         outerRing.lineWidth = outerRingWidth
         outerRing.stroke()
         
@@ -62,7 +101,7 @@ class IMFTrackerView: UIView {
             let beadDistance = outerRadius + outerRingWidth / 2 - beadRadius
             let beadCenter = CGPoint(x: center.x + beadDistance * cos(angle) , y: center.y + beadDistance * sin(angle))
             let bead = UIBezierPath(arcCenter: beadCenter, radius: beadRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
-            DialConst.clockBeadColor.setFill()
+            Dial.clockBeadColor.setFill()
             bead.fill()
             
             let deltaDotAngle = deltaAngle / 4
@@ -79,31 +118,31 @@ class IMFTrackerView: UIView {
         }
 
         let outerRightSideWedge = UIBezierPath(arcCenter: center, radius: outerRadius - outerWedgeWidth / 2,
-                                               startAngle: -45 * DialConst.D2R, endAngle: 45 * DialConst.D2R, clockwise: true)
-        DialConst.outerSideWedgeColor.setStroke()
+                                               startAngle: -45 * General.D2R, endAngle: 45 * General.D2R, clockwise: true)
+        Dial.outerSideWedgeColor.setStroke()
         outerRightSideWedge.lineWidth = outerWedgeWidth
         outerRightSideWedge.stroke()
         
         let outerLeftSideWedge = UIBezierPath(arcCenter: center, radius: outerRadius - outerWedgeWidth / 2,
-                                              startAngle: 135 * DialConst.D2R, endAngle: -135 * DialConst.D2R, clockwise: true)
-        DialConst.outerSideWedgeColor.setStroke()
+                                              startAngle: 135 * General.D2R, endAngle: -135 * General.D2R, clockwise: true)
+        Dial.outerSideWedgeColor.setStroke()
         outerLeftSideWedge.lineWidth = outerWedgeWidth
         outerLeftSideWedge.stroke()
         
         let upperBrightWedgeRadius = outerRadius - 1.25 * outerRingWidth
         let upperBrightWedge = UIBezierPath(arcCenter: center, radius: upperBrightWedgeRadius,
-                                            startAngle: -128 * DialConst.D2R, endAngle: -52 * DialConst.D2R, clockwise: true)
-        DialConst.upperBrightWedgeColor.setStroke()
+                                            startAngle: -128 * General.D2R, endAngle: -52 * General.D2R, clockwise: true)
+        Dial.upperBrightWedgeColor.setStroke()
         upperBrightWedge.lineWidth = outerRingWidth
         upperBrightWedge.stroke()
 
         // inner circles and X
         let innerCircle = UIBezierPath(arcCenter: center, radius: innerRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
-        DialConst.innerCenterColor.setFill()
+        Dial.innerCenterColor.setFill()
         innerCircle.fill()
         
         let innerRing = UIBezierPath(arcCenter: center, radius: 1.2 * innerRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
-        DialConst.innerRingColor.setStroke()
+        Dial.innerRingColor.setStroke()
         innerRing.lineWidth = innerRingWidth
         innerRing.stroke()
         
@@ -116,7 +155,7 @@ class IMFTrackerView: UIView {
             let line = UIBezierPath()
             line.move(to: center)
             line.addLine(to: CGPoint(x: center.x + lineDistance * cos(angle) , y: center.y + lineDistance * sin(angle)))
-            DialConst.largeXColor.setStroke()
+            Dial.largeXColor.setStroke()
             line.lineWidth = innerXWidth
             line.stroke()
         }
