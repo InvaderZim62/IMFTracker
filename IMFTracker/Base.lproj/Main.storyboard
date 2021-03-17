@@ -30,6 +30,9 @@
                             <constraint firstItem="T9S-Ok-W5j" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailing" id="qfd-Ci-TlG"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="imfTrackerView" destination="T9S-Ok-W5j" id="5K9-ql-nQ6"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>

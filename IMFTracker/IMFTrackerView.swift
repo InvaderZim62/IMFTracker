@@ -10,7 +10,6 @@ import UIKit
 struct General {
     static let D2R = CGFloat.pi / 180
     static let lighterBackgroundColor = #colorLiteral(red: 0.08, green: 0.08, blue: 0.08, alpha: 1)
-    static let pulseColor = #colorLiteral(red: 0, green: 0.7745906711, blue: 1, alpha: 1)
 }
 
 struct Dots {
@@ -34,9 +33,15 @@ struct Dial {
     static let largeXColor = #colorLiteral(red: 0.7377259135, green: 0.7315381169, blue: 0.4689100981, alpha: 1)
 }
 
+struct Pulse {
+    static let primaryColor = #colorLiteral(red: 0, green: 0.7745906711, blue: 1, alpha: 1)
+    static let secondaryColor = #colorLiteral(red: 0, green: 0.259739399, blue: 0.8598743081, alpha: 1)
+    static let tertiaryColor = #colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1)
+}
+
 class IMFTrackerView: UIView {
     
-    var pulsePercent: CGFloat = 50 { didSet { setNeedsDisplay() } }
+    var pulsePercent: Double = 66 { didSet { setNeedsDisplay() } }
     
     private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)
 
@@ -47,11 +52,24 @@ class IMFTrackerView: UIView {
     }
     
     private func drawPulse() {
-        let pulseRadius = bounds.height * Dial.centerFromTopFactor * pulsePercent / 100
-        let pulse = UIBezierPath(arcCenter: dialCenter, radius: pulseRadius, startAngle: -135 * General.D2R, endAngle: -45 * General.D2R, clockwise: true)
-        General.pulseColor.setStroke()
-        pulse.lineWidth = 10
-        pulse.stroke()
+        let primaryRadius = 1.15 * bounds.height * Dial.centerFromTopFactor * CGFloat(pulsePercent) / 100
+        let secondaryRadius = primaryRadius + max(12 * CGFloat(sin(pulsePercent / 4)), 0)
+        let tertiaryRadius = primaryRadius - (pulsePercent > 20 ? 0.04 * (primaryRadius - 20) : 0)
+        
+        let tertiaryPulse = UIBezierPath(arcCenter: dialCenter, radius: tertiaryRadius, startAngle: -135 * General.D2R, endAngle: -45 * General.D2R, clockwise: true)
+        Pulse.tertiaryColor.setStroke()
+        tertiaryPulse.lineWidth = 3
+        tertiaryPulse.stroke()
+
+        let secondaryPulse = UIBezierPath(arcCenter: dialCenter, radius: secondaryRadius, startAngle: -135 * General.D2R, endAngle: -45 * General.D2R, clockwise: true)
+        Pulse.secondaryColor.setStroke()
+        secondaryPulse.lineWidth = 8
+        secondaryPulse.stroke()
+
+        let primaryPulse = UIBezierPath(arcCenter: dialCenter, radius: primaryRadius, startAngle: -135 * General.D2R, endAngle: -45 * General.D2R, clockwise: true)
+        Pulse.primaryColor.setStroke()
+        primaryPulse.lineWidth = 8
+        primaryPulse.stroke()
     }
     
     private func drawDots() {
