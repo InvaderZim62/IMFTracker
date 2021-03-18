@@ -18,6 +18,7 @@ struct Dots {
     static let originFromTopFactor: CGFloat = 1.1  // percent bounds height (origin of dot lines is below the screen)
     static let startRowFromTopFactor: CGFloat = 0.53  // percent bounds height
     static let color = #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
+    static let blobColor = #colorLiteral(red: 0, green: 0.7745906711, blue: 1, alpha: 1)
 }
 
 struct Dial {
@@ -44,6 +45,8 @@ class IMFTrackerView: UIView {
     var pulsePercent: Double = 66 { didSet { setNeedsDisplay() } }
     
     private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)
+    private var blobs = [UIBezierPath]()
+    private var createdBlobs = false
 
     override func draw(_ rect: CGRect) {
         drawDots()
@@ -59,15 +62,29 @@ class IMFTrackerView: UIView {
         let deltaAngle = asin(bounds.width / centerFromTop) / 5.9  // radians (~6 dots across top of screen)
         let startAngle = 270.0 * General.D2R - (CGFloat(Dots.numberOfRadials - 1) / 2.0) * deltaAngle
         let dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same as dial bead radius, below
-        for col in 0..<Dots.numberOfRadials {
+        for radial in 0..<Dots.numberOfRadials {
             for row in 0..<Dots.numberOfRows {
                 let dotDistance = (centerFromTop - startRowFromTop) + CGFloat(row) * rowSpacing
-                let dotAngle = startAngle + CGFloat(col) * deltaAngle
+                let dotAngle = startAngle + CGFloat(radial) * deltaAngle
                 let dotCenter = CGPoint(x: bounds.midX + dotDistance * cos(dotAngle) , y: centerFromTop + dotDistance * sin(dotAngle))
                 let dot = UIBezierPath(arcCenter: dotCenter, radius: dotRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
                 Dots.color.setFill()
                 dot.fill()
+                // create blobs for the center radial (once)
+                if !createdBlobs && radial == 4 {
+                    if row < Dots.numberOfRows - 1 {
+                        let blogCenter = CGPoint(x: dotCenter.x, y: dotCenter.y - 0.3 * rowSpacing)
+                        let blobSize = CGSize(width: min(5 + row, 8), height: min(2 + row, 4))
+                        blobs.append(makeBlob(center: blogCenter, size: blobSize))
+                    } else {
+                        createdBlobs = true
+                    }
+                }
             }
+        }
+        for blob in blobs {
+            Dots.blobColor.setFill()
+            blob.fill()
         }
         
         // lighter gray backgound
@@ -78,6 +95,31 @@ class IMFTrackerView: UIView {
         wedge.fill()
     }
     
+    private func makeBlob(center: CGPoint, size: CGSize) -> UIBezierPath {
+        let blob = UIBezierPath()
+        for _ in 0..<15 {
+            let randomCenter = normalRandom(center: center, size: size)
+            let randomRadius = CGFloat.random(in: min(size.height - 1, 2)..<size.height)
+            blob.move(to: randomCenter)
+            blob.addArc(withCenter: randomCenter, radius: randomRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
+        }
+        return blob
+    }
+    
+    private func normalRandom(center: CGPoint, size: CGSize) -> CGPoint {
+        let uniformRandom = CGPoint(x: CGFloat(arc4random()) / CGFloat(UINT32_MAX),
+                                    y: CGFloat(arc4random()) / CGFloat(UINT32_MAX))
+        let temp = CGPoint(x: sqrt(-2 * log(uniformRandom.x)), y: 2 * CGFloat.pi * uniformRandom.y)
+        let normalRandom = CGPoint(x: temp.x * cos(temp.y), y: temp.x * sin(temp.y))
+        return CGPoint(x: center.x + normalRandom.x * size.width / 2 * (Bool.random() ? 1 : -1),
+                       y: center.y + normalRandom.y * size.height / 2 * (Bool.random() ? 1 : -1))
+    }
+    
+    private func uniformRandom(center: CGPoint, size: CGSize) -> CGPoint {
+        return CGPoint(x: center.x + CGFloat.random(in: -size.width..<size.width),
+                       y: center.y + CGFloat.random(in: -size.height..<size.height))
+    }
+
     private func drawDial() {
         let outerRadius = bounds.width * Dial.outerRadiusFactor
         let innerRadius = outerRadius * Dial.innerCircleFactor
