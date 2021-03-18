@@ -14,6 +14,7 @@
 		4ABE484A2601C95F001D4B4B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4ABE48492601C95F001D4B4B /* Assets.xcassets */; };
 		4ABE484D2601C95F001D4B4B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4ABE484B2601C95F001D4B4B /* LaunchScreen.storyboard */; };
 		4ABE48592601CA90001D4B4B /* IMFTrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABE48582601CA90001D4B4B /* IMFTrackerView.swift */; };
+		4AF22E922603031F00FB7CA9 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF22E912603031F00FB7CA9 /* Utilities.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		4ABE484C2601C95F001D4B4B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4ABE484E2601C95F001D4B4B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4ABE48582601CA90001D4B4B /* IMFTrackerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMFTrackerView.swift; sourceTree = "<group>"; };
+		4AF22E912603031F00FB7CA9 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 				4ABE48462601C95D001D4B4B /* Main.storyboard */,
 				4ABE48442601C95D001D4B4B /* ViewController.swift */,
 				4ABE48582601CA90001D4B4B /* IMFTrackerView.swift */,
+				4AF22E912603031F00FB7CA9 /* Utilities.swift */,
 				4ABE48552601C995001D4B4B /* Supporting Files */,
 				4ABE484E2601C95F001D4B4B /* Info.plist */,
 			);
@@ -151,6 +154,7 @@
 				4ABE48452601C95D001D4B4B /* ViewController.swift in Sources */,
 				4ABE48412601C95D001D4B4B /* AppDelegate.swift in Sources */,
 				4ABE48592601CA90001D4B4B /* IMFTrackerView.swift in Sources */,
+				4AF22E922603031F00FB7CA9 /* Utilities.swift in Sources */,
 				4ABE48432601C95D001D4B4B /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
