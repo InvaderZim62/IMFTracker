@@ -15,10 +15,10 @@ struct General {
 struct Dots {
     static let numberOfRadials = 9
     static let numberOfRows = 11
-    static let originFromTopFactor: CGFloat = 1.1  // percent bounds height (origin of dot lines is below the screen)
-    static let startRowFromTopFactor: CGFloat = 0.53  // percent bounds height
+    static let originFromTopFactor: CGFloat = 1.1  // percent bounds height (origin of dot lines is below the screen - near home button)
+    static let firstRowDistanceFromTopFactor: CGFloat = 0.53  // percent bounds height
     static let color = #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
-    static let blobColor = #colorLiteral(red: 0, green: 0.7745906711, blue: 1, alpha: 1)
+    static let blobColor = #colorLiteral(red: 0, green: 0.5769764185, blue: 1, alpha: 1)
 }
 
 struct Dial {
@@ -45,54 +45,28 @@ class IMFTrackerView: UIView {
     var pulsePercent: Double = 66 { didSet { setNeedsDisplay() } }
     
     private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)
-    private var blobs = [UIBezierPath]()
-    private var createdBlobs = false
+    private lazy var dotRowSpacing = bounds.height * Dial.centerFromTopFactor / CGFloat(Dots.numberOfRows + 3)
+    private lazy var firstDotRowDistanceFromTop = bounds.height * Dots.firstRowDistanceFromTopFactor
+    private lazy var dotLinesOriginFromTop = bounds.height * Dots.originFromTopFactor
+    private lazy var blobs = makeBlobs()
 
     override func draw(_ rect: CGRect) {
-        drawDots()
+        drawDotsAndBlobs()
         drawDial()
         drawPulse()
+        drawBottomSection()
     }
     
-    private func drawDots() {
-        // about 14 rows of dots would fit between center of dial and top of screen (11 rows drawn)
-        let rowSpacing = bounds.height * Dial.centerFromTopFactor / CGFloat(Dots.numberOfRows + 3)
-        let startRowFromTop = bounds.height * Dots.startRowFromTopFactor
-        let centerFromTop = bounds.height * Dots.originFromTopFactor
-        let deltaAngle = asin(bounds.width / centerFromTop) / 5.9  // radians (~6 dots across top of screen)
-        let startAngle = 270.0 * General.D2R - (CGFloat(Dots.numberOfRadials - 1) / 2.0) * deltaAngle
-        let dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same as dial bead radius, below
-        for radial in 0..<Dots.numberOfRadials {
-            for row in 0..<Dots.numberOfRows {
-                let dotDistance = (centerFromTop - startRowFromTop) + CGFloat(row) * rowSpacing
-                let dotAngle = startAngle + CGFloat(radial) * deltaAngle
-                let dotCenter = CGPoint(x: bounds.midX + dotDistance * cos(dotAngle) , y: centerFromTop + dotDistance * sin(dotAngle))
-                let dot = UIBezierPath(arcCenter: dotCenter, radius: dotRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
-                Dots.color.setFill()
-                dot.fill()
-                // create blobs for the center radial (once)
-                if !createdBlobs && radial == 4 {
-                    if row < Dots.numberOfRows - 1 {
-                        let blogCenter = CGPoint(x: dotCenter.x, y: dotCenter.y - 0.3 * rowSpacing)
-                        let blobSize = CGSize(width: min(5 + row, 8), height: min(2 + row, 4))
-                        blobs.append(makeBlob(center: blogCenter, size: blobSize))
-                    } else {
-                        createdBlobs = true
-                    }
-                }
+    private func makeBlobs() -> [UIBezierPath] {
+        var blobs = [UIBezierPath]()
+        for row in 0..<Dots.numberOfRows {
+            if row < Dots.numberOfRows - 1 {
+                let blobCenter = CGPoint(x: bounds.midX, y: firstDotRowDistanceFromTop - (CGFloat(row) + 0.3) * dotRowSpacing)
+                let blobSize = CGSize(width: min(5 + row, 8), height: min(2 + row, 4))
+                blobs.append(makeBlob(center: blobCenter, size: blobSize))
             }
         }
-        for blob in blobs {
-            Dots.blobColor.setFill()
-            blob.fill()
-        }
-        
-        // lighter gray backgound
-        let wedge = UIBezierPath()
-        wedge.move(to: dialCenter)
-        wedge.addArc(withCenter: dialCenter, radius: bounds.width, startAngle: -45 * General.D2R, endAngle: -135 * General.D2R, clockwise: true)
-        General.lighterBackgroundColor.setFill()
-        wedge.fill()
+        return blobs
     }
     
     private func makeBlob(center: CGPoint, size: CGSize) -> UIBezierPath {
@@ -114,10 +88,33 @@ class IMFTrackerView: UIView {
         return CGPoint(x: center.x + normalRandom.x * size.width / 2 * (Bool.random() ? 1 : -1),
                        y: center.y + normalRandom.y * size.height / 2 * (Bool.random() ? 1 : -1))
     }
-    
-    private func uniformRandom(center: CGPoint, size: CGSize) -> CGPoint {
-        return CGPoint(x: center.x + CGFloat.random(in: -size.width..<size.width),
-                       y: center.y + CGFloat.random(in: -size.height..<size.height))
+
+    private func drawDotsAndBlobs() {
+        // about 14 rows of dots would fit between center of dial and top of screen (11 rows drawn)
+        let deltaAngle = asin(bounds.width / dotLinesOriginFromTop) / 5.9  // radians (~6 dots across top of screen)
+        let startAngle = 270.0 * General.D2R - (CGFloat(Dots.numberOfRadials - 1) / 2.0) * deltaAngle
+        let dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same as dial bead radius, below
+        for radial in 0..<Dots.numberOfRadials {
+            for row in 0..<Dots.numberOfRows {
+                let dotDistanceFromOrigin = (dotLinesOriginFromTop - firstDotRowDistanceFromTop) + CGFloat(row) * dotRowSpacing  // distance from home button
+                let dotAngle = startAngle + CGFloat(radial) * deltaAngle
+                let dotCenter = CGPoint(x: bounds.midX + dotDistanceFromOrigin * cos(dotAngle) , y: dotLinesOriginFromTop + dotDistanceFromOrigin * sin(dotAngle))
+                let dot = UIBezierPath(arcCenter: dotCenter, radius: dotRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
+                Dots.color.setFill()
+                dot.fill()
+            }
+        }
+        for blob in blobs {
+            Dots.blobColor.setFill()
+            blob.fill()
+        }
+        
+        // lighter gray backgound
+        let wedge = UIBezierPath()
+        wedge.move(to: dialCenter)
+        wedge.addArc(withCenter: dialCenter, radius: bounds.width, startAngle: -45 * General.D2R, endAngle: -135 * General.D2R, clockwise: true)
+        General.lighterBackgroundColor.setFill()
+        wedge.fill()
     }
 
     private func drawDial() {
@@ -232,5 +229,9 @@ class IMFTrackerView: UIView {
         Pulse.primaryColor.setStroke()
         primaryPulse.lineWidth = 8
         primaryPulse.stroke()
+    }
+    
+    private func drawBottomSection() {
+        
     }
 }
