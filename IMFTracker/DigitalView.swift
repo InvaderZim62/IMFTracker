@@ -16,7 +16,7 @@ struct Bars {
 class DigitalView: UIView {
     
     var numberOfBars = 0 { didSet { createBars() } }  // numberOfBars must be set before levels
-    var levels = [Int]() { didSet { setBarViewLevels() } }
+    var barLevels = [Int]() { didSet { setBarViewLevels() } }
     
     private var barViews = [BarView]()
     
@@ -47,7 +47,7 @@ class DigitalView: UIView {
     }
     
     private func setBarViewLevels() {
-        precondition(levels.count == barViews.count, "(DigitalView.setBarViewLevel) Number of levels must match number of bars")
-        barViews.indices.forEach { barViews[$0].level = levels[$0] }
+        precondition(barLevels.count == barViews.count, "(DigitalView.setBarViewLevel) Number of bar levels must match number of bars")
+        barViews.indices.forEach { barViews[$0].level = barLevels[$0] }
     }
 }
