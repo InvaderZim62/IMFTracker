@@ -4,8 +4,6 @@
 //
 //  Created by Phil Stern on 3/18/21.
 //
-//  ,-,-,-,-,-,-,-,-,------------------
-//  `-`-`-`-`-`-`-`-`------------------
 
 import UIKit
 
@@ -13,7 +11,7 @@ class BarView: UIView {
     
     var maxLevel = 10
     var isRightAligned = true
-    var level = 7
+    var level = 7 { didSet { setNeedsDisplay() } }
     
     init(frame: CGRect, maxLevel: Int, isRightAligned: Bool) {
         super.init(frame: frame)
