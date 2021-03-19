@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MapKit  // for heading
 
 struct Constants {
     static let frameTime = 0.02  // seconds
@@ -15,7 +16,7 @@ struct Constants {
     static let numberOfBars = 6
 }
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, CLLocationManagerDelegate {
     
     var pulsePercent = 0.0
     var barLevels = [Double](repeating: 10, count: Constants.numberOfBars)  // use Double to keep track of small changes for rate limiting
@@ -24,8 +25,10 @@ class ViewController: UIViewController {
     var numbersCenter = [Double](repeating: 10000, count: Constants.numberOfBars)  // numbers randomly change about this center value
 
     private var simulationTimer = Timer()
+    private var locationManager = CLLocationManager()
     private var barSimulationCount = 0
 
+    @IBOutlet weak var trackerView: TrackerView!
     @IBOutlet weak var pulseView: PulseView!
     @IBOutlet weak var digitalView: DigitalView!
     @IBOutlet var numberLabels: [UILabel]!
@@ -40,9 +43,22 @@ class ViewController: UIViewController {
         view.layoutIfNeeded()
         digitalView.numberOfBars = Constants.numberOfBars
         numbersCenter.indices.forEach { numbersCenter[$0] = Double.random(in: 100..<100000) }
+        // To use location services, add the following key-value pair to Info.plist...
+        //   Key: Privacy - Location When In Use Usage Description
+        //   Value: "This application requires location services to work"
+        locationManager.requestWhenInUseAuthorization()
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.delegate = self
+            locationManager.startUpdatingHeading()   // start calls to locationManager(didUpdateLHeading:)
+        }
         startSimulation()
     }
-    
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        locationManager.stopUpdatingHeading()
+    }
+
     private func updateViewFromModel() {
         pulseView.pulsePercent = pulsePercent
         let intBarLevels = barLevels.map { Int($0) }
@@ -78,6 +94,14 @@ class ViewController: UIViewController {
                 deltaLevel = Constants.barRate * Constants.frameTime * (deltaLevel > 0 ? 1 : -1)
             }
             barLevels[index] += deltaLevel
+        }
+    }
+
+    // MARK: - CLLocationManagerDelegate
+
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        if let heading = manager.heading?.magneticHeading {
+            trackerView.heading = heading
         }
     }
 }

@@ -32,7 +32,7 @@ struct Dial {
 
 class TrackerView: UIView {
     
-    var heading: CGFloat = 0  // radians
+    var heading = 0.0 { didSet { setNeedsDisplay() } }  // degrees
     
     private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)
     // about 14 rows of dots would fit between center of dial and top of screen (11 rows drawn)
@@ -79,9 +79,9 @@ class TrackerView: UIView {
     }
 
     private func drawDotsAndBlobs() {
-//        heading = 29.rads  // pws: test
         let numberOfRadials = Int(40.rads / Dots.deltaAngle.rads) + 3  // 40 degress = +/-20 degrees from center (fits in display)
-        let startAngle = 270.rads - (CGFloat(numberOfRadials - 1) / 2.0) * Dots.deltaAngle.rads + heading.truncatingRemainder(dividingBy: Dots.deltaAngle.rads)
+        let headingWithinDeltaAngle = -heading.rads.truncatingRemainder(dividingBy: Dots.deltaAngle.rads)
+        let startAngle = 270.rads - (CGFloat(numberOfRadials - 1) / 2.0) * Dots.deltaAngle.rads + headingWithinDeltaAngle
         let dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same as dial bead radius, below
         for radial in 0..<numberOfRadials {
             for row in 0..<Dots.numberOfRows {
