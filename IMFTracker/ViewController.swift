@@ -10,7 +10,7 @@ import UIKit
 struct Constants {
     static let frameTime = 0.02  // seconds
     static let pulsePeriod = 1.4  // seconds per pulse
-    static let digitalPeriod = 1.4  // seconds per change (numbers and bars)
+    static let digitalPeriod = 0.1  // seconds per change (numbers and bars)
     static let numberOfBars = 6
 }
 
@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     private var simulationTimer = Timer()
     private var simulationCount = 0
 
-    @IBOutlet weak var trackerView: TrackerView!
+    @IBOutlet weak var pulseView: PulseView!
     @IBOutlet weak var digitalView: DigitalView!
     @IBOutlet var numberLabels: [UILabel]!
     
@@ -32,7 +32,6 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        trackerView.backgroundColor = .black
         view.setNeedsLayout()
         view.layoutIfNeeded()
         digitalView.numberOfBars = Constants.numberOfBars
@@ -54,6 +53,6 @@ class ViewController: UIViewController {
             digitalView.levels = levels
         }
         simulationCount = (simulationCount + 1) % Int(Constants.digitalPeriod / Constants.frameTime)
-        trackerView.pulsePercent = pulsePercent
+        pulseView.pulsePercent = pulsePercent
     }
 }

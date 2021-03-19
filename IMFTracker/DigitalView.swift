@@ -47,7 +47,7 @@ class DigitalView: UIView {
     }
     
     private func setBarViewLevels() {
-        precondition(levels.count == barViews.count, "Number of levels must match number of bars")
+        precondition(levels.count == barViews.count, "(DigitalView.setBarViewLevel) Number of levels must match number of bars")
         barViews.indices.forEach { barViews[$0].level = levels[$0] }
     }
 }

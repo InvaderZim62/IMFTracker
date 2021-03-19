@@ -17,6 +17,7 @@
 		4AF22E922603031F00FB7CA9 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF22E912603031F00FB7CA9 /* Utilities.swift */; };
 		4AF22E9626044F6800FB7CA9 /* DigitalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF22E9526044F6800FB7CA9 /* DigitalView.swift */; };
 		4AF22E9926045B7400FB7CA9 /* BarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF22E9826045B7400FB7CA9 /* BarView.swift */; };
+		4AF22E9C26050D1900FB7CA9 /* PulseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF22E9B26050D1900FB7CA9 /* PulseView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		4AF22E912603031F00FB7CA9 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		4AF22E9526044F6800FB7CA9 /* DigitalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DigitalView.swift; sourceTree = "<group>"; };
 		4AF22E9826045B7400FB7CA9 /* BarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarView.swift; sourceTree = "<group>"; };
+		4AF22E9B26050D1900FB7CA9 /* PulseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 				4ABE48462601C95D001D4B4B /* Main.storyboard */,
 				4ABE48442601C95D001D4B4B /* ViewController.swift */,
 				4ABE48582601CA90001D4B4B /* TrackerView.swift */,
+				4AF22E9B26050D1900FB7CA9 /* PulseView.swift */,
 				4AF22E9526044F6800FB7CA9 /* DigitalView.swift */,
 				4AF22E9826045B7400FB7CA9 /* BarView.swift */,
 				4AF22E912603031F00FB7CA9 /* Utilities.swift */,
@@ -163,6 +166,7 @@
 				4ABE48592601CA90001D4B4B /* TrackerView.swift in Sources */,
 				4AF22E9626044F6800FB7CA9 /* DigitalView.swift in Sources */,
 				4AF22E922603031F00FB7CA9 /* Utilities.swift in Sources */,
+				4AF22E9C26050D1900FB7CA9 /* PulseView.swift in Sources */,
 				4ABE48432601C95D001D4B4B /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
