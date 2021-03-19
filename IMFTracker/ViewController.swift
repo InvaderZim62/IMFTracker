@@ -10,8 +10,6 @@ import UIKit
 struct Constants {
     static let frameTime = 0.02  // seconds
     static let pulsePeriod = 1.4  // seconds per pulse
-//    static let barPeriod = 0.3  // seconds per change of target
-//    static let barRate = 8.0  // bars per sec movement towards target
     static let barPeriod = 0.2  // seconds per change of target
     static let barRate = 6.0  // bars per sec movement towards target
     static let numberOfBars = 6

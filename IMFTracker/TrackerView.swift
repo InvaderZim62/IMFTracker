@@ -8,7 +8,7 @@
 import UIKit
 
 struct Dots {
-    static let numberOfRadials = 9
+    static let deltaAngle = 5.0  // angle between radial lines (degrees)  Note: 5.2 looks like the movie display
     static let numberOfRows = 11
     static let originFromTopFactor: CGFloat = 1.1  // percent bounds height (origin of dot lines is below the screen - near home button)
     static let firstRowDistanceFromTopFactor: CGFloat = 0.53  // percent bounds height
@@ -32,17 +32,14 @@ struct Dial {
 
 class TrackerView: UIView {
     
+    var heading: CGFloat = 0  // radians
+    
     private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)
     // about 14 rows of dots would fit between center of dial and top of screen (11 rows drawn)
     private lazy var dotRowSpacing = bounds.height * Dial.centerFromTopFactor / CGFloat(Dots.numberOfRows + 3)
     private lazy var firstDotRowDistanceFromTop = bounds.height * Dots.firstRowDistanceFromTopFactor
     private lazy var dotLinesOriginFromTop = bounds.height * Dots.originFromTopFactor
     private lazy var blobs = makeBlobs()
-
-    override func draw(_ rect: CGRect) {
-        drawDotsAndBlobs()
-        drawDial()
-    }
     
     private func makeBlobs() -> [UIBezierPath] {
         var blobs = [UIBezierPath]()
@@ -76,14 +73,20 @@ class TrackerView: UIView {
                        y: center.y + normalRandom.y * size.height / 2 * (Bool.random() ? 1 : -1))
     }
 
+    override func draw(_ rect: CGRect) {
+        drawDotsAndBlobs()
+        drawDial()
+    }
+
     private func drawDotsAndBlobs() {
-        let deltaAngle = asin(bounds.width / dotLinesOriginFromTop) / 5.9  // radians (~6 dots across top of screen)
-        let startAngle = 270.rads - (CGFloat(Dots.numberOfRadials - 1) / 2.0) * deltaAngle
+//        heading = 29.rads  // pws: test
+        let numberOfRadials = Int(40.rads / Dots.deltaAngle.rads) + 3  // 40 degress = +/-20 degrees from center (fits in display)
+        let startAngle = 270.rads - (CGFloat(numberOfRadials - 1) / 2.0) * Dots.deltaAngle.rads + heading.truncatingRemainder(dividingBy: Dots.deltaAngle.rads)
         let dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same as dial bead radius, below
-        for radial in 0..<Dots.numberOfRadials {
+        for radial in 0..<numberOfRadials {
             for row in 0..<Dots.numberOfRows {
                 let dotDistanceFromOrigin = (dotLinesOriginFromTop - firstDotRowDistanceFromTop) + CGFloat(row) * dotRowSpacing  // distance from home button
-                let dotAngle = startAngle + CGFloat(radial) * deltaAngle
+                let dotAngle = startAngle + CGFloat(radial) * Dots.deltaAngle.rads
                 let dotCenter = CGPoint(x: bounds.midX + dotDistanceFromOrigin * cos(dotAngle) , y: dotLinesOriginFromTop + dotDistanceFromOrigin * sin(dotAngle))
                 let dot = UIBezierPath(arcCenter: dotCenter, radius: dotRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
                 Dots.dotColor.setFill()
