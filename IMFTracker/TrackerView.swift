@@ -1,5 +1,5 @@
 //
-//  IMFTrackerView.swift
+//  TrackerView.swift
 //  IMFTracker
 //
 //  Created by Phil Stern on 3/16/21.
@@ -36,7 +36,7 @@ struct Pulse {
     static let tertiaryColor = #colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1)
 }
 
-class IMFTrackerView: UIView {
+class TrackerView: UIView {
     
     var pulsePercent: Double = 66 { didSet { setNeedsDisplay() } }
     
