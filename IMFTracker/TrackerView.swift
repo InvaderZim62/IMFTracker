@@ -51,7 +51,6 @@ class TrackerView: UIView {
         drawDotsAndBlobs()
         drawDial()
         drawPulse()
-        drawBottomSection()
     }
     
     private func makeBlobs() -> [UIBezierPath] {
@@ -225,9 +224,5 @@ class TrackerView: UIView {
         Pulse.primaryColor.setStroke()
         primaryPulse.lineWidth = 8
         primaryPulse.stroke()
-    }
-    
-    private func drawBottomSection() {
-        
     }
 }
