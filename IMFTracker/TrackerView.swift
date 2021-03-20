@@ -6,10 +6,12 @@
 //
 
 import UIKit
+import MapKit
 
 struct Dots {
     static let deltaAngle = 5.0  // angle between radial lines (degrees)  Note: 5.2 looks like the movie display
     static let numberOfRows = 11
+    static let pointsPerFoot = 6.0  // screen points per foot range
     static let originFromTopFactor: CGFloat = 1.1  // percent bounds height (origin of dot lines is below the screen - near home button)
     static let firstRowDistanceFromTopFactor: CGFloat = 0.53  // percent bounds height
     static let lighterBackgroundColor = #colorLiteral(red: 0.08, green: 0.08, blue: 0.08, alpha: 1)
@@ -33,6 +35,9 @@ struct Dial {
 class TrackerView: UIView {
     
     var heading = 0.0 { didSet { setNeedsDisplay() } }  // degrees
+    var userPosition = CLLocationCoordinate2D() { didSet { setNeedsDisplay() } }
+    var userPositionPast = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    var targetPosition = CLLocationCoordinate2D()
     
     private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)
     // about 14 rows of dots would fit between center of dial and top of screen (11 rows drawn)
@@ -40,49 +45,22 @@ class TrackerView: UIView {
     private lazy var firstDotRowDistanceFromTop = bounds.height * Dots.firstRowDistanceFromTopFactor
     private lazy var dotLinesOriginFromTop = bounds.height * Dots.originFromTopFactor
     private lazy var blobs = makeBlobs()
-    
-    private func makeBlobs() -> [UIBezierPath] {
-        var blobs = [UIBezierPath]()
-        for row in 0..<Dots.numberOfRows {
-            if row < Dots.numberOfRows - 1 {
-                let blobCenter = CGPoint(x: bounds.midX, y: firstDotRowDistanceFromTop - (CGFloat(row) + 0.3) * dotRowSpacing)
-                let blobSize = CGSize(width: min(5 + row, 8), height: min(2 + row, 4))
-                blobs.append(makeBlob(center: blobCenter, size: blobSize))
-            }
-        }
-        return blobs
-    }
-    
-    private func makeBlob(center: CGPoint, size: CGSize) -> UIBezierPath {
-        let blob = UIBezierPath()
-        for _ in 0..<15 {
-            let randomCenter = normalRandom(center: center, size: size)
-            let randomRadius = CGFloat.random(in: min(size.height - 1, 2)..<size.height)
-            blob.move(to: randomCenter)
-            blob.addArc(withCenter: randomCenter, radius: randomRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
-        }
-        return blob
-    }
-    
-    private func normalRandom(center: CGPoint, size: CGSize) -> CGPoint {
-        let uniformRandom = CGPoint(x: CGFloat(arc4random()) / CGFloat(UINT32_MAX),
-                                    y: CGFloat(arc4random()) / CGFloat(UINT32_MAX))
-        let temp = CGPoint(x: sqrt(-2 * log(uniformRandom.x)), y: 2 * CGFloat.pi * uniformRandom.y)
-        let normalRandom = CGPoint(x: temp.x * cos(temp.y), y: temp.x * sin(temp.y))
-        return CGPoint(x: center.x + normalRandom.x * size.width / 2 * (Bool.random() ? 1 : -1),
-                       y: center.y + normalRandom.y * size.height / 2 * (Bool.random() ? 1 : -1))
-    }
 
     override func draw(_ rect: CGRect) {
         drawDotsAndBlobs()
+        drawTarget()
         drawDial()
     }
 
     private func drawDotsAndBlobs() {
+        let dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same as dial bead radius, below
         let numberOfRadials = Int(40.rads / Dots.deltaAngle.rads) + 3  // 40 degress = +/-20 degrees from center (fits in display)
         let headingWithinDeltaAngle = -heading.rads.truncatingRemainder(dividingBy: Dots.deltaAngle.rads)
         let startAngle = 270.rads - (CGFloat(numberOfRadials - 1) / 2.0) * Dots.deltaAngle.rads + headingWithinDeltaAngle
-        let dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same as dial bead radius, below
+        let deltaPosition = userPosition - userPositionPast
+        let deltaNorth = deltaPosition.latitude * Conversion.degToFeet
+        let deltaEast = deltaPosition.longitude * cos(userPosition.latitude.radsDouble) * Conversion.degToFeet
+        let rangeWithinDeltaDistance = deltaNorth * cos(heading.radsDouble) + deltaEast * sin(heading.radsDouble).truncatingRemainder(dividingBy: Double(dotRowSpacing) / Dots.pointsPerFoot)
         for radial in 0..<numberOfRadials {
             for row in 0..<Dots.numberOfRows {
                 let dotDistanceFromOrigin = (dotLinesOriginFromTop - firstDotRowDistanceFromTop) + CGFloat(row) * dotRowSpacing  // distance from home button
@@ -104,6 +82,10 @@ class TrackerView: UIView {
         wedge.addArc(withCenter: dialCenter, radius: bounds.width, startAngle: -45.rads, endAngle: -135.rads, clockwise: true)
         Dots.lighterBackgroundColor.setFill()
         wedge.fill()
+    }
+    
+    private func drawTarget() {
+        
     }
 
     private func drawDial() {
@@ -197,5 +179,37 @@ class TrackerView: UIView {
             line.lineWidth = innerXWidth
             line.stroke()
         }
+    }
+    
+    private func makeBlobs() -> [UIBezierPath] {
+        var blobs = [UIBezierPath]()
+        for row in 0..<Dots.numberOfRows {
+            if row < Dots.numberOfRows - 1 {
+                let blobCenter = CGPoint(x: bounds.midX, y: firstDotRowDistanceFromTop - (CGFloat(row) + 0.3) * dotRowSpacing)
+                let blobSize = CGSize(width: min(5 + row, 8), height: min(2 + row, 4))
+                blobs.append(makeBlob(center: blobCenter, size: blobSize))
+            }
+        }
+        return blobs
+    }
+    
+    private func makeBlob(center: CGPoint, size: CGSize) -> UIBezierPath {
+        let blob = UIBezierPath()
+        for _ in 0..<15 {
+            let randomCenter = normalRandom(center: center, size: size)
+            let randomRadius = CGFloat.random(in: min(size.height - 1, 2)..<size.height)
+            blob.move(to: randomCenter)
+            blob.addArc(withCenter: randomCenter, radius: randomRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
+        }
+        return blob
+    }
+    
+    private func normalRandom(center: CGPoint, size: CGSize) -> CGPoint {
+        let uniformRandom = CGPoint(x: CGFloat(arc4random()) / CGFloat(UINT32_MAX),
+                                    y: CGFloat(arc4random()) / CGFloat(UINT32_MAX))
+        let temp = CGPoint(x: sqrt(-2 * log(uniformRandom.x)), y: 2 * CGFloat.pi * uniformRandom.y)
+        let normalRandom = CGPoint(x: temp.x * cos(temp.y), y: temp.x * sin(temp.y))
+        return CGPoint(x: center.x + normalRandom.x * size.width / 2 * (Bool.random() ? 1 : -1),
+                       y: center.y + normalRandom.y * size.height / 2 * (Bool.random() ? 1 : -1))
     }
 }

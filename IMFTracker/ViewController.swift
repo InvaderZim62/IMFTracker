@@ -14,6 +14,7 @@ struct Constants {
     static let barPeriod = 0.2  // seconds per change of target
     static let barRate = 6.0  // bars per sec movement towards target
     static let numberOfBars = 6
+//    static let initialTargetRange = 0.00003  // delta degrees
 }
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
@@ -23,6 +24,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var targetBarLevels = [Int](repeating: 10, count: Constants.numberOfBars)
     var numbers = [Double](repeating: 10000, count: Constants.numberOfBars)
     var numbersCenter = [Double](repeating: 10000, count: Constants.numberOfBars)  // numbers randomly change about this center value
+    var targetCoordinate: CLLocationCoordinate2D?
 
     private var simulationTimer = Timer()
     private var locationManager = CLLocationManager()
@@ -49,6 +51,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.requestWhenInUseAuthorization()
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
+            locationManager.startUpdatingLocation()  // start calls to locationManager(didUpdateLocations:)
             locationManager.startUpdatingHeading()   // start calls to locationManager(didUpdateLHeading:)
         }
         startSimulation()
@@ -56,6 +59,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        locationManager.stopUpdatingLocation()
         locationManager.stopUpdatingHeading()
     }
 
@@ -98,6 +102,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
 
     // MARK: - CLLocationManagerDelegate
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = manager.location {
+            // create target coordinate a random delta from user position, using first location reading
+            if targetCoordinate == nil {
+                let targetOffset = CLLocationCoordinate2D(latitude: 0.00002, longitude: 0.00002)  // pws: fixed delta for now
+                targetCoordinate = location.coordinate + targetOffset
+                trackerView.targetPosition = targetCoordinate!
+            }
+            trackerView.userPosition = location.coordinate
+        }
+    }
 
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         if let heading = manager.heading?.magneticHeading {
