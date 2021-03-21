@@ -37,7 +37,7 @@ class DotsDialView: UIView {
     private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)  // repeated in PulseTargetView
     private lazy var firstDotRowDistanceFromTop = bounds.height * Dots.firstRowDistanceFromTopFactor
     private lazy var dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same size as dial bead radius, below
-    private lazy var dotRowSpacing = (firstDotRowDistanceFromTop - 2 * dotRadius) / CGFloat(Dots.numberOfRows - 1)
+    private lazy var dotRowSpacing = (firstDotRowDistanceFromTop - 8) / CGFloat(Dots.numberOfRows - 1)  // top row 8 points from top of screen
     private lazy var dotLinesOriginFromTop = bounds.height * Dots.originFromTopFactor
     private lazy var blobs = makeBlobs()
 
@@ -52,7 +52,6 @@ class DotsDialView: UIView {
         // draw dots
         for row in 0..<Dots.numberOfRows {
             let dotDistanceFromOrigin = (dotLinesOriginFromTop - firstDotRowDistanceFromTop) + CGFloat(row) * dotRowSpacing  // distance from home button
-            print(dotRowSpacing)
             for radial in 0..<numberOfRadials {
                 let dotAngle = startAngle + CGFloat(radial) * Dots.deltaAngle.rads  // zero to right, positive clockwise
                 let dotCenter = CGPoint(x: bounds.midX + dotDistanceFromOrigin * cos(dotAngle) , y: dotLinesOriginFromTop + dotDistanceFromOrigin * sin(dotAngle))
