@@ -15,7 +15,7 @@ struct Pulse {
 }
 
 struct Target {
-    static let pointsPerFoot: CGFloat = 6  // screen points per foot of target range from dialCenter
+    static let feetPerRowOfDots: CGFloat = 5  // for scaling target position on screen
     static let radiusFactor: CGFloat = 0.043  // times bounds.width
 }
 
@@ -75,6 +75,7 @@ class PulseTargetView: UIView {
             context.saveGState()  // need to save and restore context after drawing target, so clipping doesn't apply to pulse
             
             let dialCenter = globalData.dialCenter
+            let pointsPerFoot = globalData.dotRowSpacing / Target.feetPerRowOfDots
             let targetRadius = bounds.width * Target.radiusFactor
             
             // perform interpolations
@@ -84,8 +85,8 @@ class PulseTargetView: UIView {
 //            let targetRingRadius = interpolate.getResult(from: targetRingRadiusFactors, using: indexAndRatio) * Pulse.targetRadius
             let targetRingRadius = (1 + 0.05 * CGFloat(targetAgePercent)) * targetRadius
             
-            let targetX = CGFloat(targetRange * sin(targetHeading)) * Target.pointsPerFoot
-            let targetY = -CGFloat(targetRange * cos(targetHeading)) * Target.pointsPerFoot
+            let targetX = CGFloat(targetRange * sin(targetHeading)) * pointsPerFoot
+            let targetY = -CGFloat(targetRange * cos(targetHeading)) * pointsPerFoot
             let center = CGPoint(x: dialCenter.x + targetX, y: dialCenter.y + targetY)
             
             // clip target drawing to dots section (+/-45 degrees, outside of dial)

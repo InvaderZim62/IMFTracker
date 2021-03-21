@@ -15,7 +15,7 @@ struct Constants {
     static let barVelocity = 6.0  // bars per sec movement towards bar target
     static let targetPeriod = 1.0  // seconds for target simulation to complete
     static let numberOfBars = 6  // number of blue bars along bottom of screen
-    static let detectionRange: CGFloat = 30  // proximity of pulse to target to illuminate target (points) - needs a little lead time to look good
+    static let detectionRange: CGFloat = 30  // points: proximity of pulse to target to illuminate target - needs a little lead time to look good
 }
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
@@ -150,7 +150,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // test fixed target
 //        targetRange = 50
 //        targetHeading = -5.radsDouble
-        let targetDetected = abs(CGFloat(targetRange) * Target.pointsPerFoot - CGFloat(pulseTargetView.radiusFromPercent(pulsePercent))) < Constants.detectionRange && abs(targetHeading) < 45.radsDouble
+        let pointsPerFoot = globalData.dotRowSpacing / Target.feetPerRowOfDots
+        let targetDetected = abs(CGFloat(targetRange) * pointsPerFoot - CGFloat(pulseTargetView.radiusFromPercent(pulsePercent))) < Constants.detectionRange && abs(targetHeading) < 45.radsDouble
         return (targetDetected, targetRange, targetHeading)  // bool, feet, radians
     }
 
