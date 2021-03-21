@@ -63,33 +63,39 @@ class PulseView: UIView {
     }
     
     private func drawTarget() {
-        let indexAndRatio = interpolate.getIndexAndRatio(value: CGFloat(targetAgePercent), array: targetAgePercents)
-        let targetCenterAlpha = interpolate.getResult(from: targetCenterAlphas, using: indexAndRatio)
-        let targetRingAlpha = interpolate.getResult(from: targetRingAlphas, using: indexAndRatio)
-//        let targetRingRadius = interpolate.getResult(from: targetRingRadiusFactors, using: indexAndRatio) * Pulse.targetRadius
-        let targetRingRadius = (1 + 0.05 * CGFloat(targetAgePercent)) * Pulse.targetRadius
-
-        let targetX = CGFloat(targetRange * sin(targetHeading)) * Pulse.pointsPerFoot
-        let targetY = -CGFloat(targetRange * cos(targetHeading)) * Pulse.pointsPerFoot
-        let center = CGPoint(x: dialCenter.x + targetX, y: dialCenter.y + targetY)
-
-        // clip target drawing to sensor area
-        let dialOuterRadius = 1.1 * bounds.width * Dial.outerRadiusFactor
-        let wedge = UIBezierPath()
-        wedge.move(to: dialCenter)
-        wedge.addArc(withCenter: dialCenter, radius: bounds.height, startAngle: -135.rads, endAngle: -45.rads, clockwise: true)
-        wedge.addArc(withCenter: dialCenter, radius: dialOuterRadius, startAngle: -45.rads, endAngle: -135.rads, clockwise: false)
-        wedge.addClip()
-
-        let targetCenter = UIBezierPath(arcCenter: center, radius: Pulse.targetRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
-        let centerColor = UIColor(red: 1, green: 0, blue: 0, alpha: targetCenterAlpha)
-        centerColor.setFill()
-        targetCenter.fill()
-        
-        let targetRing = UIBezierPath(arcCenter: center, radius: targetRingRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
-        let ringColor = UIColor(red: 1, green: 0, blue: 0, alpha: targetRingAlpha)
-        ringColor.setStroke()
-        targetRing.lineWidth = 4
-        targetRing.stroke()
+        if let context = UIGraphicsGetCurrentContext() {
+            context.saveGState()  // need to save and restore context after drawing target, so clipping doesn't apply to pulse
+            
+            let indexAndRatio = interpolate.getIndexAndRatio(value: CGFloat(targetAgePercent), array: targetAgePercents)
+            let targetCenterAlpha = interpolate.getResult(from: targetCenterAlphas, using: indexAndRatio)
+            let targetRingAlpha = interpolate.getResult(from: targetRingAlphas, using: indexAndRatio)
+            //        let targetRingRadius = interpolate.getResult(from: targetRingRadiusFactors, using: indexAndRatio) * Pulse.targetRadius
+            let targetRingRadius = (1 + 0.05 * CGFloat(targetAgePercent)) * Pulse.targetRadius
+            
+            let targetX = CGFloat(targetRange * sin(targetHeading)) * Pulse.pointsPerFoot
+            let targetY = -CGFloat(targetRange * cos(targetHeading)) * Pulse.pointsPerFoot
+            let center = CGPoint(x: dialCenter.x + targetX, y: dialCenter.y + targetY)
+            
+            // clip target drawing to sensor area
+            let dialOuterRadius = 1.1 * bounds.width * Dial.outerRadiusFactor
+            let wedge = UIBezierPath()
+            wedge.move(to: dialCenter)
+            wedge.addArc(withCenter: dialCenter, radius: bounds.height, startAngle: -135.rads, endAngle: -45.rads, clockwise: true)
+            wedge.addArc(withCenter: dialCenter, radius: dialOuterRadius, startAngle: -45.rads, endAngle: -135.rads, clockwise: false)
+            wedge.addClip()
+            
+            let targetCenter = UIBezierPath(arcCenter: center, radius: Pulse.targetRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
+            let centerColor = UIColor(red: 1, green: 0, blue: 0, alpha: targetCenterAlpha)
+            centerColor.setFill()
+            targetCenter.fill()
+            
+            let targetRing = UIBezierPath(arcCenter: center, radius: targetRingRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
+            let ringColor = UIColor(red: 1, green: 0, blue: 0, alpha: targetRingAlpha)
+            ringColor.setStroke()
+            targetRing.lineWidth = 4
+            targetRing.stroke()
+            
+            context.restoreGState()
+        }
     }
 }
