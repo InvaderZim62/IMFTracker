@@ -109,10 +109,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         if barSimulationCount == 0 {
             // update random target positions for bars at barPeriod rate
             targetBarLevels.indices.forEach { targetBarLevels[$0] = Int.random(in: 6...10) }
-            numbers.indices.forEach { numbers[$0] = numbersCenter[$0] + Double.random(in: -100..<1000) }  // random numbers, except next three lines
-            numbers[0] = trackerPosition.latitude
-            numbers[1] = -trackerPosition.longitude
-            numbers[2] = trackerHeading.degsDouble
+            numbers.indices.forEach { numbers[$0] = numbersCenter[$0] + Double.random(in: -100..<1000) }  // random numbers, except next line
+            numbers[4] = trackerHeading.degsDouble
         }
         barSimulationCount = (barSimulationCount + 1) % Int(Constants.barPeriod / Constants.frameTime)
         moveLevelsToTargets()
@@ -125,9 +123,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let intBarLevels = barLevels.map { Int($0) }
         barsView.barLevels = intBarLevels
         numberLabels.indices.forEach { numberLabels[$0].text = String(format: "%.1f", numbers[$0]) }
-        numberLabels[0].text = String(format: "%.5f", numbers[0])  // latitude
-        numberLabels[1].text = String(format: "%.5f", numbers[1])  // -longitude
-        numberLabels[2].text = String(format: "%.2f", numbers[2])  // tracker heading
+        numberLabels[4].text = String(format: "%.2f", numbers[4])  // tracker heading
         pulseTargetView.targetSimulating = targetSimulating
         pulseTargetView.targetRange = targetRange  // feet
         pulseTargetView.targetHeading = targetHeading  // radians
@@ -167,7 +163,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         if let location = manager.location {
             if !once {
                 // create fixed target position at a random delta from user position
-                let deltaPosition = CLLocationCoordinate2D(latitude: -0.00008, longitude: 0.0000)  // pws: fix delta for now (0.00001 deg ~ 5 ft)
+                let deltaPosition = CLLocationCoordinate2D(latitude: 0.00008, longitude: 0.0)  // fix delta for now (0.00001 deg ~ 5 ft)
                 targetPosition = location.coordinate + deltaPosition
                 once = true
             }

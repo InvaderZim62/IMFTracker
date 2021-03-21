@@ -49,6 +49,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4A02558D2607D53C00EF4EFF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4AF22E9B26050D1900FB7CA9 /* PulseTargetView.swift */,
+				4ABE48582601CA90001D4B4B /* DotsDialView.swift */,
+				4AF22E9526044F6800FB7CA9 /* BarsView.swift */,
+				4AF22E9826045B7400FB7CA9 /* BarView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		4ABE48342601C95D001D4B4B = {
 			isa = PBXGroup;
 			children = (
@@ -70,10 +81,7 @@
 			children = (
 				4ABE48462601C95D001D4B4B /* Main.storyboard */,
 				4ABE48442601C95D001D4B4B /* ViewController.swift */,
-				4AF22E9B26050D1900FB7CA9 /* PulseTargetView.swift */,
-				4ABE48582601CA90001D4B4B /* DotsDialView.swift */,
-				4AF22E9526044F6800FB7CA9 /* BarsView.swift */,
-				4AF22E9826045B7400FB7CA9 /* BarView.swift */,
+				4A02558D2607D53C00EF4EFF /* Views */,
 				4A02558A2607B6F100EF4EFF /* GlobalData.swift */,
 				4AF22E912603031F00FB7CA9 /* Utilities.swift */,
 				4ABE48552601C995001D4B4B /* Supporting Files */,

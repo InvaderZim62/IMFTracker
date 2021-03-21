@@ -4,6 +4,8 @@
 //
 //  Created by Phil Stern on 3/21/21.
 //
+//  (see Mastermind for another example of GlobalData)
+//
 
 import UIKit
 
