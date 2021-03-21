@@ -6,12 +6,10 @@
 //
 
 import UIKit
-import MapKit
 
 struct Dots {
     static let deltaAngle = 5.0  // angle between radial lines (degrees)  Note: 5.2 looks like the movie display
     static let numberOfRows = 11
-    static let pointsPerFoot = 6.0  // screen points per foot range
     static let originFromTopFactor: CGFloat = 1.1  // percent bounds height (origin of dot lines is below the screen - near home button)
     static let firstRowDistanceFromTopFactor: CGFloat = 0.53  // percent bounds height
     static let lighterBackgroundColor = #colorLiteral(red: 0.08, green: 0.08, blue: 0.08, alpha: 1)
@@ -34,11 +32,6 @@ struct Dial {
 
 class TrackerView: UIView {
     
-    var heading = 0.0 { didSet { setNeedsDisplay() } }  // degrees
-    var userPosition = CLLocationCoordinate2D() { didSet { setNeedsDisplay() } }
-    var userPositionPast = CLLocationCoordinate2D(latitude: 0, longitude: 0)
-    var targetPosition = CLLocationCoordinate2D()
-    
     private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)
     // about 14 rows of dots would fit between center of dial and top of screen (11 rows drawn)
     private lazy var dotRowSpacing = bounds.height * Dial.centerFromTopFactor / CGFloat(Dots.numberOfRows + 3)
@@ -48,19 +41,13 @@ class TrackerView: UIView {
 
     override func draw(_ rect: CGRect) {
         drawDotsAndBlobs()
-        drawTarget()
         drawDial()
     }
 
     private func drawDotsAndBlobs() {
-        let dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same as dial bead radius, below
         let numberOfRadials = Int(40.rads / Dots.deltaAngle.rads) + 3  // 40 degress = +/-20 degrees from center (fits in display)
-        let headingWithinDeltaAngle = -heading.rads.truncatingRemainder(dividingBy: Dots.deltaAngle.rads)
-        let startAngle = 270.rads - (CGFloat(numberOfRadials - 1) / 2.0) * Dots.deltaAngle.rads + headingWithinDeltaAngle
-        let deltaPosition = userPosition - userPositionPast
-        let deltaNorth = deltaPosition.latitude * Conversion.degToFeet
-        let deltaEast = deltaPosition.longitude * cos(userPosition.latitude.radsDouble) * Conversion.degToFeet
-        let rangeWithinDeltaDistance = deltaNorth * cos(heading.radsDouble) + deltaEast * sin(heading.radsDouble).truncatingRemainder(dividingBy: Double(dotRowSpacing) / Dots.pointsPerFoot)
+        let startAngle = 270.rads - (CGFloat(numberOfRadials - 1) / 2.0) * Dots.deltaAngle.rads
+        let dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same as dial bead radius, below
         for radial in 0..<numberOfRadials {
             for row in 0..<Dots.numberOfRows {
                 let dotDistanceFromOrigin = (dotLinesOriginFromTop - firstDotRowDistanceFromTop) + CGFloat(row) * dotRowSpacing  // distance from home button
@@ -84,10 +71,6 @@ class TrackerView: UIView {
         wedge.fill()
     }
     
-    private func drawTarget() {
-        
-    }
-
     private func drawDial() {
         let outerRadius = bounds.width * Dial.outerRadiusFactor
         let innerRadius = outerRadius * Dial.innerCircleFactor

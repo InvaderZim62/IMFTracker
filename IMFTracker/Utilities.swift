@@ -29,6 +29,28 @@ extension Double {
     var degsDouble: Double {
         return self * 180.0 / Double.pi
     }
+    
+    // converts angle from +/-360 to +/-180
+    var wrap180: Double {
+        var wrappedAngle = self
+        if self > 180.0 {
+            wrappedAngle -= 360.0
+        } else if self < -180.0 {
+            wrappedAngle += 360.0
+        }
+        return wrappedAngle
+    }
+    
+    // converts angle from +/-2 pi to +/-pi
+    var wrapPi: Double {
+        var wrappedAngle = self
+        if self > Double.pi {
+            wrappedAngle -= 2 * Double.pi
+        } else if self < -Double.pi {
+            wrappedAngle += 2 * Double.pi
+        }
+        return wrappedAngle
+    }
 }
 
 extension CLLocationCoordinate2D {

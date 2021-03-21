@@ -14,7 +14,7 @@ struct Constants {
     static let barPeriod = 0.2  // seconds per change of target
     static let barRate = 6.0  // bars per sec movement towards target
     static let numberOfBars = 6
-//    static let initialTargetRange = 0.00003  // delta degrees
+    static let detectionThreshold: CGFloat = 30//5  // proximity of pulse to target to illuminate target (points)
 }
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
@@ -24,13 +24,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var targetBarLevels = [Int](repeating: 10, count: Constants.numberOfBars)
     var numbers = [Double](repeating: 10000, count: Constants.numberOfBars)
     var numbersCenter = [Double](repeating: 10000, count: Constants.numberOfBars)  // numbers randomly change about this center value
-    var targetCoordinate: CLLocationCoordinate2D?
-
+    
+    var once = false
+    var targetPosition = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    var trackerPosition = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    var trackerHeading = 0.0  // radians
+    
     private var simulationTimer = Timer()
     private var locationManager = CLLocationManager()
     private var barSimulationCount = 0
-
-    @IBOutlet weak var trackerView: TrackerView!
+    
     @IBOutlet weak var pulseView: PulseView!
     @IBOutlet weak var digitalView: DigitalView!
     @IBOutlet var numberLabels: [UILabel]!
@@ -38,6 +41,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     override var prefersStatusBarHidden: Bool {  // also added "Status bar is initially hidden" = YES to Info.plist to hide during launch
         return true
     }
+    
+    // MARK: - Start of code
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -63,13 +68,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         locationManager.stopUpdatingHeading()
     }
 
-    private func updateViewFromModel() {
-        pulseView.pulsePercent = pulsePercent
-        let intBarLevels = barLevels.map { Int($0) }
-        digitalView.barLevels = intBarLevels
-        numberLabels.indices.forEach { numberLabels[$0].text = String(format: "%.1f", numbers[$0]) }
-    }
-
     private func startSimulation() {
         simulationTimer = Timer.scheduledTimer(timeInterval: Constants.frameTime, target: self,
                                                selector: #selector(updateSimulation),
@@ -89,7 +87,18 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         moveLevelsToTargets()
         updateViewFromModel()
     }
-    
+
+    private func updateViewFromModel() {
+        pulseView.pulsePercent = pulsePercent
+        let intBarLevels = barLevels.map { Int($0) }
+        digitalView.barLevels = intBarLevels
+        numberLabels.indices.forEach { numberLabels[$0].text = String(format: "%.1f", numbers[$0]) }
+        let (targetRange, targetHeading, targetDetected) = trackerSensorModel()
+        pulseView.targetRange = targetRange  // feet
+        pulseView.targetHeading = targetHeading  // radians
+        pulseView.targetDetected = targetDetected
+    }
+
     private func moveLevelsToTargets() {
         for (index, level) in barLevels.enumerated() {
             var deltaLevel = Double(targetBarLevels[index]) - level
@@ -100,24 +109,36 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             barLevels[index] += deltaLevel
         }
     }
+    
+    private func trackerSensorModel() -> (Double, Double, Bool) {
+        let deltaPosition = targetPosition - trackerPosition
+        let deltaNorth = deltaPosition.latitude * Conversion.degToFeet  // feet
+        let deltaEast = deltaPosition.longitude * cos(trackerPosition.latitude.radsDouble) * Conversion.degToFeet
+        let targetRange = sqrt(pow(deltaNorth, 2) + pow(deltaEast, 2))
+        let bearingToTarget = atan2(deltaEast, deltaNorth)  // radians
+        let targetHeading = (bearingToTarget - trackerHeading).wrapPi
+        let targetDetected = abs(CGFloat(targetRange) * Pulse.pointsPerFoot - CGFloat(pulseView.radiusFromPercent(pulsePercent))) < Constants.detectionThreshold && abs(targetHeading) < 45.radsDouble
+//        print("target range: \(targetRange), target heading: \(targetHeading.degsDouble), tracker heading: \(trackerHeading.degsDouble)")
+        return (targetRange, targetHeading, targetDetected)  // feet, radians, bool
+    }
 
     // MARK: - CLLocationManagerDelegate
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = manager.location {
-            // create target coordinate a random delta from user position, using first location reading
-            if targetCoordinate == nil {
-                let targetOffset = CLLocationCoordinate2D(latitude: 0.00002, longitude: 0.00002)  // pws: fixed delta for now
-                targetCoordinate = location.coordinate + targetOffset
-                trackerView.targetPosition = targetCoordinate!
+            if !once {
+                // create fixed target position at a random delta from user position
+                let deltaPosition = CLLocationCoordinate2D(latitude: 0.00006, longitude: 0.00006)  // pws: fix delta for now (0.00001 deg ~ 5 ft)
+                targetPosition = location.coordinate + deltaPosition
+                once = true
             }
-            trackerView.userPosition = location.coordinate
+            trackerPosition = location.coordinate
         }
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         if let heading = manager.heading?.magneticHeading {
-            trackerView.heading = heading
+            trackerHeading = heading.radsDouble
         }
     }
 }

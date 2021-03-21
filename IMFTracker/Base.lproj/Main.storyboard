@@ -103,7 +103,6 @@
                     <connections>
                         <outlet property="digitalView" destination="OSm-f8-iFc" id="ZVa-kb-NN9"/>
                         <outlet property="pulseView" destination="Yh6-lg-2zQ" id="34E-xC-LD9"/>
-                        <outlet property="trackerView" destination="T9S-Ok-W5j" id="ys1-4R-2BW"/>
                         <outletCollection property="numberLabels" destination="MTo-MU-zDg" collectionClass="NSMutableArray" id="MCH-DZ-6kP"/>
                         <outletCollection property="numberLabels" destination="d7p-qk-W1D" collectionClass="NSMutableArray" id="fl5-0H-ULW"/>
                         <outletCollection property="numberLabels" destination="rmT-hY-ZfE" collectionClass="NSMutableArray" id="Azb-f0-4ed"/>
