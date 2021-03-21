@@ -35,9 +35,9 @@ struct Dial {
 class DotsDialView: UIView {
     
     private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)  // repeated in PulseTargetView
-    // about 14 rows of dots would fit between center of dial and top of screen (11 rows are drawn)
-    private lazy var dotRowSpacing = bounds.height * Dial.centerFromTopFactor / CGFloat(Dots.numberOfRows + 3)
     private lazy var firstDotRowDistanceFromTop = bounds.height * Dots.firstRowDistanceFromTopFactor
+    private lazy var dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same size as dial bead radius, below
+    private lazy var dotRowSpacing = (firstDotRowDistanceFromTop - 2 * dotRadius) / CGFloat(Dots.numberOfRows - 1)
     private lazy var dotLinesOriginFromTop = bounds.height * Dots.originFromTopFactor
     private lazy var blobs = makeBlobs()
 
@@ -48,18 +48,21 @@ class DotsDialView: UIView {
 
     private func drawDotsAndBlobs() {
         let numberOfRadials = Int(40.rads / Dots.deltaAngle.rads) + 3  // 40 degress = +/-20 degrees from center (fits in display)
-        let startAngle = 270.rads - (CGFloat(numberOfRadials - 1) / 2.0) * Dots.deltaAngle.rads
-        let dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same as dial bead radius, below
-        for radial in 0..<numberOfRadials {
-            for row in 0..<Dots.numberOfRows {
-                let dotDistanceFromOrigin = (dotLinesOriginFromTop - firstDotRowDistanceFromTop) + CGFloat(row) * dotRowSpacing  // distance from home button
-                let dotAngle = startAngle + CGFloat(radial) * Dots.deltaAngle.rads
+        let startAngle = 270.rads - (CGFloat(numberOfRadials - 1) / 2.0) * Dots.deltaAngle.rads  // zero to right, positive clockwise
+        // draw dots
+        for row in 0..<Dots.numberOfRows {
+            let dotDistanceFromOrigin = (dotLinesOriginFromTop - firstDotRowDistanceFromTop) + CGFloat(row) * dotRowSpacing  // distance from home button
+            print(dotRowSpacing)
+            for radial in 0..<numberOfRadials {
+                let dotAngle = startAngle + CGFloat(radial) * Dots.deltaAngle.rads  // zero to right, positive clockwise
                 let dotCenter = CGPoint(x: bounds.midX + dotDistanceFromOrigin * cos(dotAngle) , y: dotLinesOriginFromTop + dotDistanceFromOrigin * sin(dotAngle))
+                
                 let dot = UIBezierPath(arcCenter: dotCenter, radius: dotRadius, startAngle: 0, endAngle: 2 * CGFloat.pi, clockwise: true)
                 Dots.dotColor.setFill()
                 dot.fill()
             }
         }
+        // draw blobs
         for blob in blobs {
             Dots.blobColor.setFill()
             blob.fill()
