@@ -110,7 +110,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             // update random target positions for bars at barPeriod rate
             targetBarLevels.indices.forEach { targetBarLevels[$0] = Int.random(in: 6...10) }
             numbers.indices.forEach { numbers[$0] = numbersCenter[$0] + Double.random(in: -100..<1000) }  // random numbers, except next line
-            numbers[4] = trackerHeading.degsDouble
+            numbers[3] = trackerHeading.degsDouble // put tracker heading in middle of right column
         }
         barSimulationCount = (barSimulationCount + 1) % Int(Constants.barPeriod / Constants.frameTime)
         moveLevelsToTargets()
@@ -123,7 +123,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let intBarLevels = barLevels.map { Int($0) }
         barsView.barLevels = intBarLevels
         numberLabels.indices.forEach { numberLabels[$0].text = String(format: "%.1f", numbers[$0]) }
-        numberLabels[4].text = String(format: "%.2f", numbers[4])  // tracker heading
+        numberLabels[4].text = String(format: "%.2f", numbers[3])  // tracker heading
         pulseTargetView.targetSimulating = targetSimulating
         pulseTargetView.targetRange = targetRange  // feet
         pulseTargetView.targetHeading = targetHeading  // radians

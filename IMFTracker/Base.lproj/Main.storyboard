@@ -104,12 +104,12 @@
                         <outlet property="barsView" destination="OSm-f8-iFc" id="ZVa-kb-NN9"/>
                         <outlet property="dotsDialView" destination="T9S-Ok-W5j" id="zcE-4s-wSV"/>
                         <outlet property="pulseTargetView" destination="Yh6-lg-2zQ" id="34E-xC-LD9"/>
-                        <outletCollection property="numberLabels" destination="iff-sS-XmT" collectionClass="NSMutableArray" id="PhT-VO-XQX"/>
-                        <outletCollection property="numberLabels" destination="edN-Ko-Xg7" collectionClass="NSMutableArray" id="mD4-2p-YPM"/>
-                        <outletCollection property="numberLabels" destination="MTo-MU-zDg" collectionClass="NSMutableArray" id="dtJ-JH-Rbl"/>
-                        <outletCollection property="numberLabels" destination="rmT-hY-ZfE" collectionClass="NSMutableArray" id="gmc-X2-PKE"/>
-                        <outletCollection property="numberLabels" destination="hEn-P7-ise" collectionClass="NSMutableArray" id="Yl3-qj-suh"/>
-                        <outletCollection property="numberLabels" destination="d7p-qk-W1D" collectionClass="NSMutableArray" id="SFu-7t-Ai6"/>
+                        <outletCollection property="numberLabels" destination="iff-sS-XmT" collectionClass="NSMutableArray" id="bAq-Tn-9Uv"/>
+                        <outletCollection property="numberLabels" destination="rmT-hY-ZfE" collectionClass="NSMutableArray" id="lqm-qO-KYL"/>
+                        <outletCollection property="numberLabels" destination="edN-Ko-Xg7" collectionClass="NSMutableArray" id="cCY-Hm-I5g"/>
+                        <outletCollection property="numberLabels" destination="hEn-P7-ise" collectionClass="NSMutableArray" id="cIF-Zv-oQ5"/>
+                        <outletCollection property="numberLabels" destination="MTo-MU-zDg" collectionClass="NSMutableArray" id="wXW-H7-inc"/>
+                        <outletCollection property="numberLabels" destination="d7p-qk-W1D" collectionClass="NSMutableArray" id="3xc-71-3Mu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
