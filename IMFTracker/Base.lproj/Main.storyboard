@@ -102,6 +102,7 @@
                     </view>
                     <connections>
                         <outlet property="barsView" destination="OSm-f8-iFc" id="ZVa-kb-NN9"/>
+                        <outlet property="dotsDialView" destination="T9S-Ok-W5j" id="zcE-4s-wSV"/>
                         <outlet property="pulseTargetView" destination="Yh6-lg-2zQ" id="34E-xC-LD9"/>
                         <outletCollection property="numberLabels" destination="MTo-MU-zDg" collectionClass="NSMutableArray" id="MCH-DZ-6kP"/>
                         <outletCollection property="numberLabels" destination="d7p-qk-W1D" collectionClass="NSMutableArray" id="fl5-0H-ULW"/>

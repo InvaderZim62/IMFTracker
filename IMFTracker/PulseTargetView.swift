@@ -20,7 +20,9 @@ struct Target {
 }
 
 class PulseTargetView: UIView {
-    
+   
+    private var globalData = GlobalData.sharedInstance
+
     var pulsePercent: Double = 0 { didSet { setNeedsDisplay() } }  // pulse wave position: 0 is at dialCenter, 100 is above top of screen
     var targetSimulating = false
     var targetRange = 0.0 { didSet { setNeedsDisplay() } }  // feet
@@ -33,8 +35,6 @@ class PulseTargetView: UIView {
     private let targetRingAlphas:        [CGFloat] = [0.0, 0.5, 1.0, 1.0, 1.0, 1.0, 0.8, 0.6, 0.4, 0.2, 0.0]
     private let targetRingRadiusFactors: [CGFloat] = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0]  // times targetRadius
     private let interpolate = Interpolate<CGFloat>()
-
-    private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)  // repeated in DotsDialView
     
     // MARK: - Start of code
 
@@ -49,6 +49,7 @@ class PulseTargetView: UIView {
     }
 
     private func drawPulse() {
+        let dialCenter = globalData.dialCenter
         let primaryRadius = CGFloat(radiusFromPercent(pulsePercent))
         let secondaryRadius = primaryRadius + max(12 * CGFloat(sin(pulsePercent / 4)), 0)  // one-sided sine wave
         let tertiaryRadius = primaryRadius - (pulsePercent > 20 ? 0.04 * (primaryRadius - 20) : 0)  // begins to separate after 20%
@@ -73,6 +74,7 @@ class PulseTargetView: UIView {
         if let context = UIGraphicsGetCurrentContext() {
             context.saveGState()  // need to save and restore context after drawing target, so clipping doesn't apply to pulse
             
+            let dialCenter = globalData.dialCenter
             let targetRadius = bounds.width * Target.radiusFactor
             
             // perform interpolations

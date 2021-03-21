@@ -37,10 +37,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var targetSimulating = false
     var targetAgePercent = 0.0
 
+    private var globalData = GlobalData.sharedInstance
     private var simulationTimer = Timer()
     private var locationManager = CLLocationManager()
     private var barSimulationCount = 0
     
+    @IBOutlet weak var dotsDialView: DotsDialView!
     @IBOutlet weak var pulseTargetView: PulseTargetView!
     @IBOutlet weak var barsView: BarsView!
     @IBOutlet var numberLabels: [UILabel]!
@@ -55,6 +57,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         super.viewWillAppear(animated)
         view.setNeedsLayout()
         view.layoutIfNeeded()
+        let firstDotRowDistanceFromTop = dotsDialView.bounds.height * Dots.firstRowDistanceFromTopFactor
+        globalData.dotRowSpacing = (firstDotRowDistanceFromTop - 8) / CGFloat(Dots.numberOfRows - 1)  // top row 8 points from top of screen
+        globalData.dialCenter = CGPoint(x: dotsDialView.bounds.midX, y: dotsDialView.bounds.height * Dial.centerFromTopFactor)
         barsView.numberOfBars = Constants.numberOfBars
         numbersCenter.indices.forEach { numbersCenter[$0] = Double.random(in: 100..<100000) }
         // To use location services, add the following key-value pair to Info.plist...

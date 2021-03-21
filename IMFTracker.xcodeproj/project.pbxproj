@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A02558B2607B6F100EF4EFF /* GlobalData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A02558A2607B6F100EF4EFF /* GlobalData.swift */; };
 		4ABE48412601C95D001D4B4B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABE48402601C95D001D4B4B /* AppDelegate.swift */; };
 		4ABE48432601C95D001D4B4B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABE48422601C95D001D4B4B /* SceneDelegate.swift */; };
 		4ABE48452601C95D001D4B4B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABE48442601C95D001D4B4B /* ViewController.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4A02558A2607B6F100EF4EFF /* GlobalData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalData.swift; sourceTree = "<group>"; };
 		4ABE483D2601C95D001D4B4B /* IMFTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IMFTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ABE48402601C95D001D4B4B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4ABE48422601C95D001D4B4B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -72,6 +74,7 @@
 				4ABE48582601CA90001D4B4B /* DotsDialView.swift */,
 				4AF22E9526044F6800FB7CA9 /* BarsView.swift */,
 				4AF22E9826045B7400FB7CA9 /* BarView.swift */,
+				4A02558A2607B6F100EF4EFF /* GlobalData.swift */,
 				4AF22E912603031F00FB7CA9 /* Utilities.swift */,
 				4ABE48552601C995001D4B4B /* Supporting Files */,
 				4ABE484E2601C95F001D4B4B /* Info.plist */,
@@ -166,6 +169,7 @@
 				4ABE48592601CA90001D4B4B /* DotsDialView.swift in Sources */,
 				4AF22E9626044F6800FB7CA9 /* BarsView.swift in Sources */,
 				4AF22E922603031F00FB7CA9 /* Utilities.swift in Sources */,
+				4A02558B2607B6F100EF4EFF /* GlobalData.swift in Sources */,
 				4AF22E9C26050D1900FB7CA9 /* PulseTargetView.swift in Sources */,
 				4ABE48432601C95D001D4B4B /* SceneDelegate.swift in Sources */,
 			);

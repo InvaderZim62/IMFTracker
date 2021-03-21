@@ -33,11 +33,11 @@ struct Dial {
 }
 
 class DotsDialView: UIView {
-    
-    private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)  // repeated in PulseTargetView
+
+    private var globalData = GlobalData.sharedInstance
+
     private lazy var firstDotRowDistanceFromTop = bounds.height * Dots.firstRowDistanceFromTopFactor
     private lazy var dotRadius = bounds.width * Dial.outerRadiusFactor / 32  // same size as dial bead radius, below
-    private lazy var dotRowSpacing = (firstDotRowDistanceFromTop - 8) / CGFloat(Dots.numberOfRows - 1)  // top row 8 points from top of screen
     private lazy var dotLinesOriginFromTop = bounds.height * Dots.originFromTopFactor
     private lazy var blobs = makeBlobs()
 
@@ -47,11 +47,12 @@ class DotsDialView: UIView {
     }
 
     private func drawDotsAndBlobs() {
+        let dialCenter = globalData.dialCenter
         let numberOfRadials = Int(40.rads / Dots.deltaAngle.rads) + 3  // 40 degress = +/-20 degrees from center (fits in display)
         let startAngle = 270.rads - (CGFloat(numberOfRadials - 1) / 2.0) * Dots.deltaAngle.rads  // zero to right, positive clockwise
         // draw dots
         for row in 0..<Dots.numberOfRows {
-            let dotDistanceFromOrigin = (dotLinesOriginFromTop - firstDotRowDistanceFromTop) + CGFloat(row) * dotRowSpacing  // distance from home button
+            let dotDistanceFromOrigin = (dotLinesOriginFromTop - firstDotRowDistanceFromTop) + CGFloat(row) * globalData.dotRowSpacing  // origin ~home button
             for radial in 0..<numberOfRadials {
                 let dotAngle = startAngle + CGFloat(radial) * Dots.deltaAngle.rads  // zero to right, positive clockwise
                 let dotCenter = CGPoint(x: bounds.midX + dotDistanceFromOrigin * cos(dotAngle) , y: dotLinesOriginFromTop + dotDistanceFromOrigin * sin(dotAngle))
@@ -76,6 +77,7 @@ class DotsDialView: UIView {
     }
     
     private func drawDial() {
+        let dialCenter = globalData.dialCenter
         let outerRadius = bounds.width * Dial.outerRadiusFactor
         let innerRadius = outerRadius * Dial.innerCircleFactor
         let innerRingWidth = innerRadius / 6
@@ -172,7 +174,7 @@ class DotsDialView: UIView {
         var blobs = [UIBezierPath]()
         for row in 0..<Dots.numberOfRows {
             if row < Dots.numberOfRows - 1 {
-                let blobCenter = CGPoint(x: bounds.midX, y: firstDotRowDistanceFromTop - (CGFloat(row) + 0.3) * dotRowSpacing)
+                let blobCenter = CGPoint(x: bounds.midX, y: firstDotRowDistanceFromTop - (CGFloat(row) + 0.3) * globalData.dotRowSpacing)
                 let blobSize = CGSize(width: min(5 + row, 8), height: min(2 + row, 4))
                 blobs.append(makeBlob(center: blobCenter, size: blobSize))
             }
