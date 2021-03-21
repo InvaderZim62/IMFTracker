@@ -1,5 +1,5 @@
 //
-//  PulseView.swift
+//  PulseTargetView.swift
 //  IMFTracker
 //
 //  Created by Phil Stern on 3/19/21.
@@ -16,7 +16,7 @@ struct Pulse {
     static let targetRadius: CGFloat = 16
 }
 
-class PulseView: UIView {
+class PulseTargetView: UIView {
     
     var pulsePercent: Double = 0 { didSet { setNeedsDisplay() } }  // pulse wave position: 0 is at dialCenter, 100 is above top of screen
     var targetSimulating = false

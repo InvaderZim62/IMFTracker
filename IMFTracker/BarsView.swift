@@ -1,5 +1,5 @@
 //
-//  DigitalView.swift
+//  BarsView.swift
 //  IMFTracker
 //
 //  Created by Phil Stern on 3/18/21.
@@ -13,7 +13,7 @@ struct Bars {
     static let maxLevel = 10
 }
 
-class DigitalView: UIView {
+class BarsView: UIView {
     
     var numberOfBars = 0 { didSet { createBars() } }  // numberOfBars must be set before levels
     var barLevels = [Int]() { didSet { setBarViewLevels() } }
@@ -47,7 +47,7 @@ class DigitalView: UIView {
     }
     
     private func setBarViewLevels() {
-        precondition(barLevels.count == barViews.count, "(DigitalView.setBarViewLevel) Number of bar levels must match number of bars")
+        precondition(barLevels.count == barViews.count, "(BarsView.setBarViewLevel) Number of bar levels must match number of bars")
         barViews.indices.forEach { barViews[$0].level = barLevels[$0] }
     }
 }

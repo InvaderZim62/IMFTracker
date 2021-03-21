@@ -20,11 +20,11 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Yh6-lg-2zQ" customClass="PulseView" customModule="IMFTracker" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Yh6-lg-2zQ" customClass="PulseTargetView" customModule="IMFTracker" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OSm-f8-iFc" customClass="DigitalView" customModule="IMFTracker" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OSm-f8-iFc" customClass="BarsView" customModule="IMFTracker" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="651.33333333333337" width="414" height="84.666666666666629"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="Oco-Mi-c0b">
@@ -101,8 +101,8 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="digitalView" destination="OSm-f8-iFc" id="ZVa-kb-NN9"/>
-                        <outlet property="pulseView" destination="Yh6-lg-2zQ" id="34E-xC-LD9"/>
+                        <outlet property="barsView" destination="OSm-f8-iFc" id="ZVa-kb-NN9"/>
+                        <outlet property="pulseTargetView" destination="Yh6-lg-2zQ" id="34E-xC-LD9"/>
                         <outletCollection property="numberLabels" destination="MTo-MU-zDg" collectionClass="NSMutableArray" id="MCH-DZ-6kP"/>
                         <outletCollection property="numberLabels" destination="d7p-qk-W1D" collectionClass="NSMutableArray" id="fl5-0H-ULW"/>
                         <outletCollection property="numberLabels" destination="rmT-hY-ZfE" collectionClass="NSMutableArray" id="Azb-f0-4ed"/>

@@ -41,8 +41,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     private var locationManager = CLLocationManager()
     private var barSimulationCount = 0
     
-    @IBOutlet weak var pulseView: PulseView!
-    @IBOutlet weak var digitalView: DigitalView!
+    @IBOutlet weak var pulseTargetView: PulseTargetView!
+    @IBOutlet weak var barsView: BarsView!
     @IBOutlet var numberLabels: [UILabel]!
     
     override var prefersStatusBarHidden: Bool {  // also added "Status bar is initially hidden" = YES to Info.plist to hide during launch
@@ -55,7 +55,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         super.viewWillAppear(animated)
         view.setNeedsLayout()
         view.layoutIfNeeded()
-        digitalView.numberOfBars = Constants.numberOfBars
+        barsView.numberOfBars = Constants.numberOfBars
         numbersCenter.indices.forEach { numbersCenter[$0] = Double.random(in: 100..<100000) }
         // To use location services, add the following key-value pair to Info.plist...
         //   Key: Privacy - Location When In Use Usage Description
@@ -113,14 +113,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
 
     private func updateViewFromModel() {
-        pulseView.pulsePercent = pulsePercent
+        pulseTargetView.pulsePercent = pulsePercent
         let intBarLevels = barLevels.map { Int($0) }
-        digitalView.barLevels = intBarLevels
+        barsView.barLevels = intBarLevels
         numberLabels.indices.forEach { numberLabels[$0].text = String(format: "%.1f", numbers[$0]) }
-        pulseView.targetSimulating = targetSimulating
-        pulseView.targetRange = targetRange  // feet
-        pulseView.targetHeading = targetHeading  // radians
-        pulseView.targetAgePercent = targetAgePercent
+        pulseTargetView.targetSimulating = targetSimulating
+        pulseTargetView.targetRange = targetRange  // feet
+        pulseTargetView.targetHeading = targetHeading  // radians
+        pulseTargetView.targetAgePercent = targetAgePercent
     }
 
     private func moveLevelsToTargets() {
@@ -145,7 +145,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // test fixed target
 //        targetRange = 50
 //        targetHeading = -5.radsDouble
-        let targetDetected = abs(CGFloat(targetRange) * Pulse.pointsPerFoot - CGFloat(pulseView.radiusFromPercent(pulsePercent))) < Constants.detectionRange && abs(targetHeading) < 45.radsDouble
+        let targetDetected = abs(CGFloat(targetRange) * Pulse.pointsPerFoot - CGFloat(pulseTargetView.radiusFromPercent(pulsePercent))) < Constants.detectionRange && abs(targetHeading) < 45.radsDouble
         return (targetDetected, targetRange, targetHeading)  // bool, feet, radians
     }
 
@@ -155,7 +155,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         if let location = manager.location {
             if !once {
                 // create fixed target position at a random delta from user position
-                let deltaPosition = CLLocationCoordinate2D(latitude: 0.00006, longitude: 0.00006)  // pws: fix delta for now (0.00001 deg ~ 5 ft)
+                let deltaPosition = CLLocationCoordinate2D(latitude: 0.0, longitude: -0.00006)  // pws: fix delta for now (0.00001 deg ~ 5 ft)
                 targetPosition = location.coordinate + deltaPosition
                 once = true
             }
