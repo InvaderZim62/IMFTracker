@@ -145,7 +145,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         // test fixed target
 //        targetRange = 50
 //        targetHeading = -5.radsDouble
-        let targetDetected = abs(CGFloat(targetRange) * Pulse.pointsPerFoot - CGFloat(pulseTargetView.radiusFromPercent(pulsePercent))) < Constants.detectionRange && abs(targetHeading) < 45.radsDouble
+        let targetDetected = abs(CGFloat(targetRange) * Target.pointsPerFoot - CGFloat(pulseTargetView.radiusFromPercent(pulsePercent))) < Constants.detectionRange && abs(targetHeading) < 45.radsDouble
         return (targetDetected, targetRange, targetHeading)  // bool, feet, radians
     }
 

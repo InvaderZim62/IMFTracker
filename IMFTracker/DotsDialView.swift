@@ -1,8 +1,10 @@
 //
-//  TrackerView.swift
+//  DotsDialView.swift
 //  IMFTracker
 //
 //  Created by Phil Stern on 3/16/21.
+//
+//  Fixed view - only called once.
 //
 
 import UIKit
@@ -30,10 +32,10 @@ struct Dial {
     static let largeXColor = #colorLiteral(red: 0.6209777594, green: 0.6121075153, blue: 0.4009537101, alpha: 1)
 }
 
-class TrackerView: UIView {
+class DotsDialView: UIView {
     
-    private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)
-    // about 14 rows of dots would fit between center of dial and top of screen (11 rows drawn)
+    private lazy var dialCenter = CGPoint(x: bounds.midX, y: bounds.height * Dial.centerFromTopFactor)  // repeated in PulseTargetView
+    // about 14 rows of dots would fit between center of dial and top of screen (11 rows are drawn)
     private lazy var dotRowSpacing = bounds.height * Dial.centerFromTopFactor / CGFloat(Dots.numberOfRows + 3)
     private lazy var firstDotRowDistanceFromTop = bounds.height * Dots.firstRowDistanceFromTopFactor
     private lazy var dotLinesOriginFromTop = bounds.height * Dots.originFromTopFactor
