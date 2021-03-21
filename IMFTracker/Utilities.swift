@@ -13,6 +13,25 @@ struct Conversion {
     static let degToFeet = 60.0 * nmiToFeet  // approx. 1 deg latitude = 60 nmi
 }
 
+class Interpolate<T: Comparable & FloatingPoint> {
+    func getIndexAndRatio(value: T, array: [T]) -> (index: Int, ratio: T) {
+        var index = 0
+        for i in 0..<array.count - 1 {
+            if array[i] < value {
+                index = i
+            } else {
+                break
+            }
+        }
+        let ratio = (value - array[index]) / (array[index + 1] - array[index])
+        return (index, ratio)
+    }
+
+    func getResult(from array: [T], using indexAndRatio: (index: Int, ratio: T)) -> T {
+        return array[indexAndRatio.index] + indexAndRatio.ratio * (array[indexAndRatio.index + 1] - array[indexAndRatio.index])
+    }
+}
+
 extension Double {
     var rads: CGFloat {
         return CGFloat(self) * CGFloat.pi / 180.0

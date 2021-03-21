@@ -20,6 +20,10 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Yh6-lg-2zQ" customClass="PulseView" customModule="IMFTracker" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OSm-f8-iFc" customClass="DigitalView" customModule="IMFTracker" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="651.33333333333337" width="414" height="84.666666666666629"/>
                                 <subviews>
@@ -77,10 +81,6 @@
                                     <constraint firstAttribute="trailing" secondItem="NT1-xm-dRv" secondAttribute="trailing" constant="30" id="Xsc-M8-Qzy"/>
                                     <constraint firstItem="Oco-Mi-c0b" firstAttribute="centerY" secondItem="OSm-f8-iFc" secondAttribute="centerY" id="ZVP-Bo-Jey"/>
                                 </constraints>
-                            </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Yh6-lg-2zQ" customClass="PulseView" customModule="IMFTracker" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>

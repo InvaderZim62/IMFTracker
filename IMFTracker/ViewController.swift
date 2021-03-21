@@ -11,10 +11,11 @@ import MapKit  // for heading
 struct Constants {
     static let frameTime = 0.02  // seconds
     static let pulsePeriod = 1.4  // seconds per pulse
-    static let barPeriod = 0.2  // seconds per change of target
-    static let barRate = 6.0  // bars per sec movement towards target
-    static let numberOfBars = 6
-    static let detectionThreshold: CGFloat = 30//5  // proximity of pulse to target to illuminate target (points)
+    static let barPeriod = 0.2  // seconds per change of bar target
+    static let barVelocity = 6.0  // bars per sec movement towards bar target
+    static let targetPeriod = 1.0  // seconds for target simulation to complete
+    static let numberOfBars = 6  // number of blue bars along bottom of screen
+    static let detectionRange: CGFloat = 30  // proximity of pulse to target to illuminate target (points) - needs a little lead time to look good
 }
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
@@ -30,6 +31,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var trackerPosition = CLLocationCoordinate2D(latitude: 0, longitude: 0)
     var trackerHeading = 0.0  // radians
     
+    var targetRange = 0.0  // feet
+    var targetHeading = 0.0  // radians
+    var targetDetected = false
+    var targetSimulating = false
+    var targetAgePercent = 0.0
+
     private var simulationTimer = Timer()
     private var locationManager = CLLocationManager()
     private var barSimulationCount = 0
@@ -75,9 +82,25 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     @objc func updateSimulation() {
+        // pulse wave
         let deltaPercent = Constants.frameTime / Constants.pulsePeriod * 100
         pulsePercent = (pulsePercent + deltaPercent).truncatingRemainder(dividingBy: 100)
         
+        if !targetSimulating {
+            (targetDetected, targetRange, targetHeading) = trackerSensorModel()
+        }
+        
+        // target
+        if targetDetected || targetSimulating {
+            targetSimulating = true  // latch, since targetDetected triggers momentarily as pulse sweeps target
+            targetAgePercent += Constants.frameTime / Constants.targetPeriod * 100
+            if targetAgePercent >= 100 {
+                targetSimulating = false  // unlatch when target is done simulating
+                targetAgePercent = 0
+            }
+        }
+        
+        // equalizer bars along the bottom
         if barSimulationCount == 0 {
             // update random target positions for bars at barPeriod rate
             targetBarLevels.indices.forEach { targetBarLevels[$0] = Int.random(in: 6...10) }
@@ -85,6 +108,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         }
         barSimulationCount = (barSimulationCount + 1) % Int(Constants.barPeriod / Constants.frameTime)
         moveLevelsToTargets()
+
         updateViewFromModel()
     }
 
@@ -93,33 +117,36 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let intBarLevels = barLevels.map { Int($0) }
         digitalView.barLevels = intBarLevels
         numberLabels.indices.forEach { numberLabels[$0].text = String(format: "%.1f", numbers[$0]) }
-        let (targetRange, targetHeading, targetDetected) = trackerSensorModel()
+        pulseView.targetSimulating = targetSimulating
         pulseView.targetRange = targetRange  // feet
         pulseView.targetHeading = targetHeading  // radians
-        pulseView.targetDetected = targetDetected
+        pulseView.targetAgePercent = targetAgePercent
     }
 
     private func moveLevelsToTargets() {
         for (index, level) in barLevels.enumerated() {
             var deltaLevel = Double(targetBarLevels[index]) - level
-            if abs(deltaLevel) > Constants.barRate * Constants.frameTime {
+            if abs(deltaLevel) > Constants.barVelocity * Constants.frameTime {
                 // apply rate limit to levels
-                deltaLevel = Constants.barRate * Constants.frameTime * (deltaLevel > 0 ? 1 : -1)
+                deltaLevel = Constants.barVelocity * Constants.frameTime * (deltaLevel > 0 ? 1 : -1)
             }
             barLevels[index] += deltaLevel
         }
     }
     
-    private func trackerSensorModel() -> (Double, Double, Bool) {
+    // compute target properties based on data from updateSimulation (pulsePercent) and locationManager (targetPosition, trackerPosition, trackerHeading)
+    private func trackerSensorModel() -> (Bool, Double, Double) {
         let deltaPosition = targetPosition - trackerPosition
         let deltaNorth = deltaPosition.latitude * Conversion.degToFeet  // feet
         let deltaEast = deltaPosition.longitude * cos(trackerPosition.latitude.radsDouble) * Conversion.degToFeet
         let targetRange = sqrt(pow(deltaNorth, 2) + pow(deltaEast, 2))
         let bearingToTarget = atan2(deltaEast, deltaNorth)  // radians
         let targetHeading = (bearingToTarget - trackerHeading).wrapPi
-        let targetDetected = abs(CGFloat(targetRange) * Pulse.pointsPerFoot - CGFloat(pulseView.radiusFromPercent(pulsePercent))) < Constants.detectionThreshold && abs(targetHeading) < 45.radsDouble
-//        print("target range: \(targetRange), target heading: \(targetHeading.degsDouble), tracker heading: \(trackerHeading.degsDouble)")
-        return (targetRange, targetHeading, targetDetected)  // feet, radians, bool
+        // test fixed target
+//        targetRange = 50
+//        targetHeading = -5.radsDouble
+        let targetDetected = abs(CGFloat(targetRange) * Pulse.pointsPerFoot - CGFloat(pulseView.radiusFromPercent(pulsePercent))) < Constants.detectionRange && abs(targetHeading) < 45.radsDouble
+        return (targetDetected, targetRange, targetHeading)  // bool, feet, radians
     }
 
     // MARK: - CLLocationManagerDelegate
