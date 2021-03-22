@@ -16,17 +16,17 @@ struct Dots {
     static let firstRowDistanceFromTopFactor: CGFloat = 0.53  // percent bounds height
     static let lighterBackgroundColor = #colorLiteral(red: 0.08, green: 0.08, blue: 0.08, alpha: 1)
     static let dotColor = #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
-    static let blobColor = #colorLiteral(red: 0, green: 0.5769764185, blue: 1, alpha: 1)
+    static let blobColor = #colorLiteral(red: 0.0003377870016, green: 0.5450543761, blue: 0.949290216, alpha: 1)
 }
 
 struct Dial {
     static let centerFromTopFactor: CGFloat = 0.7  // percent bounds height
     static let outerRadiusFactor: CGFloat = 0.21  // percent bounds width
     static let innerCircleFactor: CGFloat = 0.3  // percent outer radius
-    static let outerRingColor = #colorLiteral(red: 0.007069805637, green: 0.3669355512, blue: 0.9889140725, alpha: 1)
+    static let outerRingColor = #colorLiteral(red: 0.00627097534, green: 0.4420556426, blue: 0.6384952664, alpha: 1)
     static let clockBeadColor = #colorLiteral(red: 0.01647673175, green: 0.9682727456, blue: 0.4770763516, alpha: 1)
-    static let upperBrightWedgeColor = #colorLiteral(red: 0.9179044366, green: 0.9080289602, blue: 0.5714150071, alpha: 1)
-    static let outerSideWedgeColor = #colorLiteral(red: 0.05882352963, green: 0.180392161, blue: 0.2470588237, alpha: 1)
+    static let upperBrightWedgeColor = #colorLiteral(red: 1, green: 0.9036917273, blue: 0.4067936073, alpha: 1)
+    static let outerSideWedgeColor = #colorLiteral(red: 0.1338707209, green: 0.2045380473, blue: 0.2005188167, alpha: 1)
     static let innerRingColor = #colorLiteral(red: 0.3280324042, green: 0.336155057, blue: 0.07936634868, alpha: 1)
     static let innerCenterColor = #colorLiteral(red: 0.1362066269, green: 0.2441202402, blue: 0.07585870475, alpha: 1)
     static let largeXColor = #colorLiteral(red: 0.6209777594, green: 0.6121075153, blue: 0.4009537101, alpha: 1)
