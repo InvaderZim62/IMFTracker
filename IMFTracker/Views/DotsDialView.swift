@@ -33,6 +33,8 @@ struct Dial {
 }
 
 class DotsDialView: UIView {
+    
+    var targetClose = false { didSet { setNeedsDisplay() } }
 
     private var globalData = GlobalData.sharedInstance
 
@@ -78,7 +80,7 @@ class DotsDialView: UIView {
     
     private func drawDial() {
         let dialCenter = globalData.dialCenter
-        let outerRadius = bounds.width * Dial.outerRadiusFactor
+        let outerRadius = globalData.dialOuterRadius
         let innerRadius = outerRadius * Dial.innerCircleFactor
         let innerRingWidth = innerRadius / 6
         let innerXWidth = innerRadius / 8
@@ -91,7 +93,7 @@ class DotsDialView: UIView {
         Dial.outerRingColor.setStroke()
         outerRing.lineWidth = outerRingWidth
         outerRing.stroke()
-        
+
         // lines, beads, and dots around outer ring
         let deltaAngle = 2 * CGFloat.pi / 12
         let lineInnerRadius = outerRadius - outerRingWidth / 2
@@ -164,7 +166,7 @@ class DotsDialView: UIView {
             let line = UIBezierPath()
             line.move(to: dialCenter)
             line.addLine(to: CGPoint(x: dialCenter.x + lineDistance * cos(angle) , y: dialCenter.y + lineDistance * sin(angle)))
-            Dial.largeXColor.setStroke()
+            targetClose ? UIColor.red.setStroke() : Dial.largeXColor.setStroke()
             line.lineWidth = innerXWidth
             line.stroke()
         }

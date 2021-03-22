@@ -15,4 +15,5 @@ class GlobalData: NSObject {
     
     var dotRowSpacing: CGFloat = 0
     var dialCenter: CGPoint = .zero
+    var dialOuterRadius: CGFloat = 0
 }

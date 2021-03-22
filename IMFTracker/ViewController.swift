@@ -16,6 +16,7 @@ struct Constants {
     static let targetPeriod = 1.0  // seconds for target simulation to complete
     static let numberOfBars = 6  // number of blue bars along bottom of screen
     static let detectionRange: CGFloat = 30  // points: proximity of pulse to target to illuminate target - needs a little lead time to look good
+    static let closeRange: CGFloat = 10  // points
 }
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
@@ -34,6 +35,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var targetRange = 0.0  // feet
     var targetHeading = 0.0  // radians
     var targetDetected = false
+    var targetClose = false
     var targetSimulating = false
     var targetAgePercent = 0.0
 
@@ -60,6 +62,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let firstDotRowDistanceFromTop = dotsDialView.bounds.height * Dots.firstRowDistanceFromTopFactor
         globalData.dotRowSpacing = (firstDotRowDistanceFromTop - 8) / CGFloat(Dots.numberOfRows - 1)  // top row 8 points from top of screen
         globalData.dialCenter = CGPoint(x: dotsDialView.bounds.midX, y: dotsDialView.bounds.height * Dial.centerFromTopFactor)
+        globalData.dialOuterRadius = dotsDialView.bounds.width * Dial.outerRadiusFactor
         barsView.numberOfBars = Constants.numberOfBars
         numbersCenter.indices.forEach { numbersCenter[$0] = Double.random(in: 100..<100000) }
         // To use location services, add the following key-value pair to Info.plist...
@@ -92,7 +95,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         pulsePercent = (pulsePercent + deltaPercent).truncatingRemainder(dividingBy: 100)
         
         if !targetSimulating {
-            (targetDetected, targetRange, targetHeading) = trackerSensorModel()
+            (targetDetected, targetClose, targetRange, targetHeading) = trackerSensorModel()
         }
         
         // target
@@ -128,6 +131,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         pulseTargetView.targetRange = targetRange  // feet
         pulseTargetView.targetHeading = targetHeading  // radians
         pulseTargetView.targetAgePercent = targetAgePercent
+        dotsDialView.targetClose = targetClose
     }
 
     private func moveLevelsToTargets() {
@@ -142,7 +146,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     // compute target properties based on data from updateSimulation (pulsePercent) and locationManager (targetPosition, trackerPosition, trackerHeading)
-    private func trackerSensorModel() -> (Bool, Double, Double) {
+    private func trackerSensorModel() -> (Bool, Bool, Double, Double) {
         let deltaPosition = targetPosition - trackerPosition
         let deltaNorth = deltaPosition.latitude * Conversion.degToFeet  // feet
         let deltaEast = deltaPosition.longitude * cos(trackerPosition.latitude.radsDouble) * Conversion.degToFeet
@@ -154,7 +158,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
 //        targetHeading = -5.radsDouble
         let pointsPerFoot = globalData.dotRowSpacing / Target.feetPerRowOfDots
         let targetDetected = abs(CGFloat(targetRange) * pointsPerFoot - CGFloat(pulseTargetView.radiusFromPercent(pulsePercent))) < Constants.detectionRange && abs(targetHeading) < 45.radsDouble
-        return (targetDetected, targetRange, targetHeading)  // bool, feet, radians
+        let targetClose = CGFloat(targetRange) * pointsPerFoot < globalData.dialOuterRadius
+        return (targetDetected, targetClose, targetRange, targetHeading)  // bool, feet, radians
     }
 
     // MARK: - CLLocationManagerDelegate
