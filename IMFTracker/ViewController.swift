@@ -55,6 +55,23 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     // MARK: - Start of code
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(screenTapped))
+        tapGesture.numberOfTapsRequired = 1
+        view.addGestureRecognizer(tapGesture)
+        // To use location services, add the following key-value pair to Info.plist...
+        //   Key: Privacy - Location When In Use Usage Description
+        //   Value: "This application requires location services to work"
+        locationManager.requestWhenInUseAuthorization()
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            locationManager.startUpdatingLocation()  // start calls to locationManager(didUpdateLocations:)
+            locationManager.startUpdatingHeading()   // start calls to locationManager(didUpdateLHeading:)
+        }
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         view.setNeedsLayout()
@@ -65,15 +82,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         globalData.dialOuterRadius = dotsDialView.bounds.width * Dial.outerRadiusFactor
         barsView.numberOfBars = Constants.numberOfBars
         numbersCenter.indices.forEach { numbersCenter[$0] = Double.random(in: 100..<100000) }
-        // To use location services, add the following key-value pair to Info.plist...
-        //   Key: Privacy - Location When In Use Usage Description
-        //   Value: "This application requires location services to work"
-        locationManager.requestWhenInUseAuthorization()
-        if CLLocationManager.locationServicesEnabled() {
-            locationManager.delegate = self
-            locationManager.startUpdatingLocation()  // start calls to locationManager(didUpdateLocations:)
-            locationManager.startUpdatingHeading()   // start calls to locationManager(didUpdateLHeading:)
-        }
         startSimulation()
     }
 
@@ -160,6 +168,24 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let targetDetected = abs(CGFloat(targetRange) * pointsPerFoot - CGFloat(pulseTargetView.radiusFromPercent(pulsePercent))) < Constants.detectionRange && abs(targetHeading) < 45.radsDouble
         let targetClose = CGFloat(targetRange) * pointsPerFoot < globalData.dialOuterRadius
         return (targetDetected, targetClose, targetRange, targetHeading)  // bool, feet, radians
+    }
+    
+    @objc func screenTapped(tap: UITapGestureRecognizer) {
+        // place target at location of screen tap
+        let tapPoint = tap.location(in: pulseTargetView)
+        let targetX = tapPoint.x - globalData.dialCenter.x  // cartesian coordinates from dial center
+        let targetY = -tapPoint.y + globalData.dialCenter.y
+        let pointsPerFoot = globalData.dotRowSpacing / Target.feetPerRowOfDots
+        let targetRange = Double(sqrt(pow(targetX, 2) + pow(targetY, 2)) / pointsPerFoot)  // feet
+        let targetHeading = atan2(targetX, targetY)  // radians (heading relative to tracker centerline)
+        let targetBearing = Double(targetHeading) + trackerHeading  // radians (bearing relative to North)
+        let deltaNorth = targetRange * cos(targetBearing)
+        let deltaEast = targetRange * sin(targetBearing)
+        let deltaLatitude = deltaNorth / Conversion.degToFeet
+        let deltaLongitude = deltaEast / cos(trackerPosition.latitude.radsDouble) / Conversion.degToFeet
+        let targetLatitude = deltaLatitude + trackerPosition.latitude
+        let targetLongitude = deltaLongitude + trackerPosition.longitude
+        targetPosition = CLLocationCoordinate2D(latitude: targetLatitude, longitude: targetLongitude)
     }
 
     // MARK: - CLLocationManagerDelegate

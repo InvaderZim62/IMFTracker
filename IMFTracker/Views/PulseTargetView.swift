@@ -25,7 +25,7 @@ class PulseTargetView: UIView {
 
     var pulsePercent: Double = 0 { didSet { setNeedsDisplay() } }  // pulse wave position: 0 is at dialCenter, 100 is above top of screen
     var targetSimulating = false
-    var targetRange = 0.0 { didSet { setNeedsDisplay() } }  // feet
+    var targetRange = 0.0 { didSet { setNeedsDisplay() } }  // feet, from dial center
     var targetHeading = 0.0 { didSet { setNeedsDisplay() } }  // radians: +/-pi/4 (ie. +/-45 degrees) is in view
     var targetAgePercent = 0.0  // target life cycle: 0 is point, 100 is ring fully grown and faded away
 
@@ -85,9 +85,9 @@ class PulseTargetView: UIView {
 //            let targetRingRadius = interpolate.getResult(from: targetRingRadiusFactors, using: indexAndRatio) * Pulse.targetRadius
             let targetRingRadius = (1 + 0.05 * CGFloat(targetAgePercent)) * targetRadius
             
-            let targetX = CGFloat(targetRange * sin(targetHeading)) * pointsPerFoot
-            let targetY = -CGFloat(targetRange * cos(targetHeading)) * pointsPerFoot
-            let center = CGPoint(x: dialCenter.x + targetX, y: dialCenter.y + targetY)
+            let targetX = CGFloat(targetRange * sin(targetHeading)) * pointsPerFoot  // cartesian coordinates, from dial center
+            let targetY = CGFloat(targetRange * cos(targetHeading)) * pointsPerFoot
+            let center = CGPoint(x: dialCenter.x + targetX, y: dialCenter.y - targetY)  // screen coordinates
             
             // clip target drawing to dots section (+/-45 degrees, outside of dial)
             let dialOuterRadius = 1.1 * bounds.width * Dial.outerRadiusFactor
