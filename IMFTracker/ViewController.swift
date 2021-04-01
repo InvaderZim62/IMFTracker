@@ -134,7 +134,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let intBarLevels = barLevels.map { Int($0) }
         barsView.barLevels = intBarLevels
         numberLabels.indices.forEach { numberLabels[$0].text = String(format: "%.1f", numbers[$0]) }
-        numberLabels[4].text = String(format: "%.2f", numbers[3])  // tracker heading
+        numberLabels[3].text = String(format: "%.2f", numbers[3])  // tracker heading
         pulseTargetView.targetSimulating = targetSimulating
         pulseTargetView.targetRange = targetRange  // feet
         pulseTargetView.targetHeading = targetHeading  // radians
