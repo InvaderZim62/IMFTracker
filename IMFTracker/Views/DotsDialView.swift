@@ -50,7 +50,7 @@ class DotsDialView: UIView {
 
     private func drawDotsAndBlobs() {
         let dialCenter = globalData.dialCenter
-        let numberOfRadials = Int(40.rads / Dots.deltaAngle.rads) + 3  // 40 degress = +/-20 degrees from center (fits in display)
+        let numberOfRadials = Int(40.rads / Dots.deltaAngle.rads) + 3  // 40 degrees = +/-20 degrees from center (fits in display)
         let startAngle = 270.rads - (CGFloat(numberOfRadials - 1) / 2.0) * Dots.deltaAngle.rads  // zero to right, positive clockwise
         // draw dots
         for row in 0..<Dots.numberOfRows {
@@ -70,7 +70,7 @@ class DotsDialView: UIView {
             blob.fill()
         }
         
-        // lighter gray backgound
+        // lighter gray background
         let wedge = UIBezierPath()
         wedge.move(to: dialCenter)
         wedge.addArc(withCenter: dialCenter, radius: bounds.width, startAngle: -45.rads, endAngle: -135.rads, clockwise: true)
