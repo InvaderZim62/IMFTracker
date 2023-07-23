@@ -9,4 +9,4 @@ your movements.
 
 ![IMF Tracker](https://github.com/InvaderZim62/IMFTracker/assets/34785252/bdbd9f4d-9dea-4456-9bc6-bfe79b77f182)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![IMF Tracker](https://github.com/InvaderZim62/IMFTracker/assets/34785252/941dbe35-43b3-46d0-90da-bf5b5311ec57)
+![IMF Tracker](https://github.com/InvaderZim62/IMFTracker/assets/34785252/a1002f43-ebd9-4f38-a513-93b28c0a3f07)
