@@ -5,7 +5,7 @@ a John Lark decoy (Liang Yang) into a night club bathroom.  I thought the displa
 I created my own.
 
 In my version, you tap on the screen to create the target.  As you move around, the target tracks
-your movements.
+your movements.  It works best outdoors, since it used GPS.
 
 ![IMF Tracker](https://github.com/InvaderZim62/IMFTracker/assets/34785252/bdbd9f4d-9dea-4456-9bc6-bfe79b77f182)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
